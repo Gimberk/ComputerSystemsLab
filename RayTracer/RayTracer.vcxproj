@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hittables\sphere.h" />
+    <ClInclude Include="hittables\material.h" />
     <ClInclude Include="utility\color.h" />
     <ClInclude Include="hittables\Primitive.h" />
     <ClInclude Include="utility\hit_record.h" />

@@ -14,45 +14,46 @@
 
 std::vector<std::shared_ptr<primitive>> objects;
 
-static color ray_color(const ray& r) {
-	bool hit_anything = false;
+static color ray_color(const ray& r, const int ray_bounces = 16) {
 	double closest_so_far = std::numeric_limits<double>::infinity();
 	std::shared_ptr<primitive> closest_obj = nullptr;
-	int closest_index = 0;
 
-	int i = 0;
 	for (const std::shared_ptr<primitive>& obj : objects) {
 		const hit_record hit = obj->intersect(r);
 
-		if (hit.valid && hit.t < closest_so_far) {
-			hit_anything = true;
+		if (hit.valid && hit.t < closest_so_far && hit.t > 0.001) {
 			closest_so_far = hit.t;
 			closest_obj = obj;
-			closest_index = i;
 		}
-
-		i++;
 	}
 
-	if (hit_anything) {
-		return closest_index == 0 ? color(0, 0, 0) : color(1, 1, 1);
+	if (!closest_obj) {
+		// if no solution:
+		// we blend from baby-blue to white
+		vec3 unit_direction = unit_vector(r.direction());
+		auto x = 0.5 * (unit_direction.y + 1.0);
+		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
 	}
+		
+	const vec3 normal = unit_vector(r.point(closest_so_far) - vec3(0, 0, -1));
+	vec3 scatter_direction = normal + utility::random_unit_vector();
 
-	// if no solution:
-	// we blend from baby-blue to white
-	vec3 unit_direction = unit_vector(r.direction());
-	auto x = 0.5 * (unit_direction.y + 1.0);
-	return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
+	if (scatter_direction.near_zero()) scatter_direction = normal;
+
+	ray scattered(r.point(closest_so_far), scatter_direction);
+
+	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
+	return obj_color * (ray_bounces > 1 ? ray_color(scattered, ray_bounces - 1) : color(1, 1, 1));
 }
 
 int main()
 {
-	objects.push_back(std::make_shared<sphere>(point3(0, 0, -2), 0.75));
-	objects.push_back(std::make_shared<sphere>(point3(0, 0, -1), 0.25));
+	objects.push_back(std::make_shared<sphere>(point3(0, 0, -1), 0.5, std::make_unique<material>(color(0.67, 0.5, 1))));
+	objects.emplace_back(std::make_shared<sphere>(point3(0, -100.5, -1), 100, std::make_unique<material>(color(0.4, 0.95, 0.4))));
 
 	// a bunch of lame camera math stuff
 	const double aspect_ratio = 16 / 9;
-	const int image_width = 400; // 400 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
+	const int image_width = 600; // 400 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
 	
 	double focal_length = 1;
 	point3 camera_center = point3(0, 0, 0);

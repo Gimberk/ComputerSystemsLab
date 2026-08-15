@@ -43,6 +43,8 @@ public:
 	double length() const { return sqrt(length_squared()); }
 
 	double length_squared() const { return x * x + y * y + z * z; }
+
+	bool near_zero() const { return length() < 0.05; }
 };
 
 using point3 = vec3;

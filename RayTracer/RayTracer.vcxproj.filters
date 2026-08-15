@@ -47,5 +47,8 @@
     <ClInclude Include="hittables\sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hittables\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

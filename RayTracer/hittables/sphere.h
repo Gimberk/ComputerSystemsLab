@@ -10,10 +10,19 @@ class sphere : public primitive {
 public:
 	point3 center;
 	double radius;
+	
+	sphere(const sphere&) = delete;
+	sphere& operator=(const sphere&) = delete;
 
-	sphere(const vec3 center, const double radius) : primitive(PrimitiveType::sphere), center(center), radius(radius) {}
+	sphere(sphere&&) noexcept = default;
+	sphere& operator=(sphere&&) noexcept = default;
+
+	sphere(const point3& center, const double radius) : primitive(PrimitiveType::sphere), center(center), radius(radius) {}
+
+	sphere(const point3& center, const double radius, std::unique_ptr<material> mat) 
+		: primitive(PrimitiveType::sphere, std::move(mat)), center(center), radius(radius) {}
 
 	const hit_record intersect(const ray& r) const override;
 
-	const vec3 get_normal(const vec3& hit_point) const override;
+	const vec3 get_normal(const point3& hit_point) const override;
 };

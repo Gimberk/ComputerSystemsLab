@@ -11,9 +11,9 @@ const hit_record sphere::intersect(const ray& r) const {
 
 	const double t = (h - sqrt(discr)) / a;
 
-	return hit_record(t, std::make_unique<sphere>(*this));
+	return hit_record(t, this);
 }
 
-const vec3 sphere::get_normal(const vec3& hit_point) const {
+const vec3 sphere::get_normal(const point3& hit_point) const {
 	return unit_vector(hit_point - center);
 }
