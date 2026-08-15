@@ -37,7 +37,7 @@ namespace utility {
 		const double phi = acos(2 * v - 1);
 
 		// convert to cartesian coords
-		const double x = sin(phi) * cos(theta), y = sin(phi) * sin(theta), z = cos(phi);
+		const double x = sin(phi) * cos(theta), y = sin(phi) * sin(theta), z = sqrt(u);
 		
 		return vec3(x, y, z);
 	}

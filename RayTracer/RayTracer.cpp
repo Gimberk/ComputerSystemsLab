@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
-#include "utility/vec3.h"
 #include "utility/color.h"
 #include "utility/ray.h"
 #include "utility/random.h"
@@ -12,9 +12,27 @@
 #include "hittables/Primitive.h"
 #include "hittables/sphere.h"
 
+const color BLACK(0, 0, 0);
+const color WHITE(1, 1, 1);
+const color RED(1, 0, 0);
+const color GREEN(0, 1, 0);
+const color BLUE(0, 0, 1);
+
+const color sun_color(254.0/255.0, 211.0/255.0, 60.0/255.0);
+
+const vec3 sun_direction(0.707, 0.707, 0);
+
+const int max_depth = 16;
+
 std::vector<std::shared_ptr<primitive>> objects;
 
-static color ray_color(const ray& r, const int ray_bounces = 16) {
+static bool find_any_hit(const ray& r) {
+	for (const std::shared_ptr<primitive>& obj : objects) if (obj->intersect(r).valid) return true;
+}
+
+static color ray_color(const ray& r, const int depth = 0) {
+	if (depth > max_depth) return BLACK;
+
 	double closest_so_far = std::numeric_limits<double>::infinity();
 	std::shared_ptr<primitive> closest_obj = nullptr;
 
@@ -34,16 +52,19 @@ static color ray_color(const ray& r, const int ray_bounces = 16) {
 		auto x = 0.5 * (unit_direction.y + 1.0);
 		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
 	}
-		
-	const vec3 normal = unit_vector(r.point(closest_so_far) - vec3(0, 0, -1));
-	vec3 scatter_direction = normal + utility::random_unit_vector();
 
+	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
+	const vec3 normal = closest_obj->get_normal(r.point(closest_so_far));
+
+	color direct_light = BLACK;
+	const ray shadow_ray(r.point(closest_so_far), sun_direction);
+	if (!find_any_hit(shadow_ray)) direct_light = obj_color * sun_color * std::max(0.0, dot(normal, sun_direction));
+
+	vec3 scatter_direction = normal + utility::random_unit_vector();
 	if (scatter_direction.near_zero()) scatter_direction = normal;
 
 	ray scattered(r.point(closest_so_far), scatter_direction);
-
-	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
-	return obj_color * (ray_bounces > 1 ? ray_color(scattered, ray_bounces - 1) : color(1, 1, 1));
+	return direct_light + obj_color * ray_color(scattered, depth + 1);
 }
 
 int main()
