@@ -5,20 +5,20 @@
 
 #include "material.h"
 
-enum class PrimitiveType {
+enum class primitive_type {
 	sphere, triangle
 };
 
 class primitive {
 public:
-	PrimitiveType type;
+	primitive_type type;
 	std::unique_ptr<material> mat;
 
 	primitive(primitive&&) noexcept = default;
 	primitive& operator=(primitive&&) noexcept = default;
 
-	primitive(PrimitiveType type) : type(type), mat(nullptr) {}
-	primitive(PrimitiveType type, std::unique_ptr<material> mat) : type(type), mat(std::move(mat)) {}
+	primitive(primitive_type type) : type(type), mat(nullptr) {}
+	primitive(primitive_type type, std::unique_ptr<material> mat) : type(type), mat(std::move(mat)) {}
 
 	// returns a hit_record containing valid=true on hit and valid=false if no hit
 	const virtual hit_record intersect(const ray& r) const = 0;
@@ -27,5 +27,5 @@ public:
 
 	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
 
-	bool has_material() { return bool(mat); }
+	const bool has_material() const { return bool(mat); }
 };

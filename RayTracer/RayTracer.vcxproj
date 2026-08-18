@@ -147,11 +147,14 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="RayTracer.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />
     <ClCompile Include="utility\color.cpp" />
+    <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="hittables\sphere.h" />
     <ClInclude Include="hittables\material.h" />
     <ClInclude Include="utility\color.h" />
@@ -160,6 +163,7 @@
     <ClInclude Include="utility\random.h" />
     <ClInclude Include="utility\ray.h" />
     <ClInclude Include="utility\vec3.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
