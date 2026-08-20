@@ -42,7 +42,7 @@ public:
 
 	color ray_color(const ray&, const int = 0) const;
 
-	void generate_image() const;
+	const std::vector<unsigned char>* generate_image();
 
 private:
 	std::vector<std::shared_ptr<primitive>> objects;

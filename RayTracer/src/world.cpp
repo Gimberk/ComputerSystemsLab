@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <chrono>
+
 const color world::BLACK(0, 0, 0);
 const color world::WHITE(1, 1, 1);
 const color world::RED(1, 0, 0);
@@ -61,11 +63,13 @@ color world::ray_color(const ray& r, const int depth) const {
 	return direct_light + obj_color * ray_color(scattered, depth + 1);
 }
 
-void world::generate_image() const {
+const std::vector<unsigned char>* world::generate_image() {
+	auto start = std::chrono::high_resolution_clock::now();
+
 	for (int row = 0; row < cam->image_height; row++) {
 		for (int col = 0; col < cam->image_width; col++) {
 			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * col + cam->pixel_delta_v * row;
-			color average_color(0, 0, 0);
+			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
 
 			for (int i = 0; i < cam->rays_per_pixel; i++) {
 				double offset_u = utility::random_double64() - 0.5;
@@ -80,6 +84,18 @@ void world::generate_image() const {
 			}
 
 			average_color /= cam->rays_per_pixel;
+
+			// write the average color to the framebuffer
+			const int index = (row * cam->image_width + col) * 3;
+			framebuffer[index] = static_cast<unsigned char>(255.999 * average_color.x);
+			framebuffer[index + 1] = static_cast<unsigned char>(255.999 * average_color.y);
+			framebuffer[index + 2] = static_cast<unsigned char>(255.999 * average_color.z);
 		}
 	}
+
+	auto end = std::chrono::high_resolution_clock::now();
+	double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
+
+	std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec" << '\n';
+	return &framebuffer;
 }

@@ -153,7 +153,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\RayTracer.cpp" />
     <ClCompile Include="src\hittables\sphere.cpp" />
