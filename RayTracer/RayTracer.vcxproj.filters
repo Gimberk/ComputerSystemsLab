@@ -15,52 +15,70 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RayTracer.cpp">
+    <ClCompile Include="src\RayTracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hittables\sphere.cpp">
+    <ClCompile Include="src\hittables\sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utility\color.cpp">
+    <ClCompile Include="src\utility\color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
+    <ClCompile Include="src\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="world.cpp">
+    <ClCompile Include="src\world.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="utility\vec3.h">
+    <ClInclude Include="src\utility\vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utility\color.h">
+    <ClInclude Include="src\utility\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utility\ray.h">
+    <ClInclude Include="src\utility\ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utility\random.h">
+    <ClInclude Include="src\utility\random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\Primitive.h">
+    <ClInclude Include="src\hittables\Primitive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utility\hit_record.h">
+    <ClInclude Include="src\utility\hit_record.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\sphere.h">
+    <ClInclude Include="src\hittables\sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\material.h">
+    <ClInclude Include="src\hittables\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="world.h">
+    <ClInclude Include="src\world.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="src\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libs\GLFW\lib\glfw3.dll" />
+    <None Include="img.ppm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libs\GLFW\lib\glfw3.lib" />
+    <Library Include="libs\GLFW\lib\glfw3_mt.lib" />
+    <Library Include="libs\GLFW\lib\glfw3dll.lib" />
   </ItemGroup>
 </Project>

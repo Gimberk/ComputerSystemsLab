@@ -3,11 +3,15 @@
 #include <memory>
 #include <vector>
 
+#include "camera.h"
+
 #include "hittables/Primitive.h"
 
 #include "utility/hit_record.h"
 #include "utility/color.h"
 #include "utility/vec3.h"
+
+#include "utility/random.h"
 
 class world {
 public:
@@ -22,9 +26,13 @@ public:
 
 	int max_ray_depth;
 
-	world() : sun_color(color(254.0 / 255.0, 211.0 / 255.0, 60.0 / 255.0)), sun_direction(vec3(0.707, 0.707, 0)), max_ray_depth(16) {}
+	world(camera* cam) 
+		: sun_color(color(254.0 / 255.0, 211.0 / 255.0, 60.0 / 255.0)), sun_direction(vec3(0.707, 0.707, 0)), 
+		max_ray_depth(16), cam(cam), framebuffer(cam->image_width * cam->image_height * 3) {
+	}
 
-	world(int max_ray_depth, color sun_color, vec3 sun_direction) : sun_color(sun_color), sun_direction(sun_direction), max_ray_depth(max_ray_depth) {}
+	world(camera* cam, int max_ray_depth, color sun_color, vec3 sun_direction) 
+		: sun_color(sun_color), sun_direction(sun_direction), max_ray_depth(max_ray_depth), cam(cam) {}
 
 	void create_object(const std::shared_ptr<primitive>&);
 
@@ -32,6 +40,15 @@ public:
 
 	const hit_record intersect_world(const ray& r) const;
 
+	color ray_color(const ray&, const int = 0) const;
+
+	void generate_image() const;
+
 private:
 	std::vector<std::shared_ptr<primitive>> objects;
+	std::vector<unsigned char> framebuffer;
+
+	camera* cam;
+
+	const bool find_any_hit(const ray& r) const;
 };

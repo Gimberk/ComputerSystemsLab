@@ -119,10 +119,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLAD\include;C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -137,33 +140,48 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLAD\include;C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\james\source\repos\RayTracer\RayTracer\libs\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="RayTracer.cpp" />
-    <ClCompile Include="hittables\sphere.cpp" />
-    <ClCompile Include="utility\color.cpp" />
-    <ClCompile Include="world.cpp" />
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\RayTracer.cpp" />
+    <ClCompile Include="src\hittables\sphere.cpp" />
+    <ClCompile Include="src\utility\color.cpp" />
+    <ClCompile Include="src\world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="hittables\sphere.h" />
-    <ClInclude Include="hittables\material.h" />
-    <ClInclude Include="utility\color.h" />
-    <ClInclude Include="hittables\Primitive.h" />
-    <ClInclude Include="utility\hit_record.h" />
-    <ClInclude Include="utility\random.h" />
-    <ClInclude Include="utility\ray.h" />
-    <ClInclude Include="utility\vec3.h" />
-    <ClInclude Include="world.h" />
+    <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
+    <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\hittables\sphere.h" />
+    <ClInclude Include="src\hittables\material.h" />
+    <ClInclude Include="src\utility\color.h" />
+    <ClInclude Include="src\hittables\Primitive.h" />
+    <ClInclude Include="src\utility\hit_record.h" />
+    <ClInclude Include="src\utility\random.h" />
+    <ClInclude Include="src\utility\ray.h" />
+    <ClInclude Include="src\utility\vec3.h" />
+    <ClInclude Include="src\world.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img.ppm" />
+    <None Include="libs\GLFW\lib\glfw3.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libs\GLFW\lib\glfw3.lib" />
+    <Library Include="libs\GLFW\lib\glfw3dll.lib" />
+    <Library Include="libs\GLFW\lib\glfw3_mt.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
