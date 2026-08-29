@@ -30,6 +30,9 @@
     <ClCompile Include="src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\utility\vec3.h">
@@ -72,6 +75,7 @@
   <ItemGroup>
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="img.ppm" />
+    <None Include="Profiler\Report20260820-2151.diagsession" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\GLFW\lib\glfw3.lib" />

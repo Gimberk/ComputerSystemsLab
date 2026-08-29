@@ -32,11 +32,12 @@ public:
 	}
 
 	world(camera* cam, int max_ray_depth, color sun_color, vec3 sun_direction) 
-		: sun_color(sun_color), sun_direction(sun_direction), max_ray_depth(max_ray_depth), cam(cam) {}
+		: sun_color(sun_color), sun_direction(sun_direction), max_ray_depth(max_ray_depth), cam(cam), 
+		framebuffer(cam->image_width* cam->image_height * 3) {}
 
 	void create_object(const std::shared_ptr<primitive>&);
 
-	const std::vector<std::shared_ptr<primitive>> get_objects() const;
+	const std::vector<std::shared_ptr<primitive>>& get_objects() const;
 
 	const hit_record intersect_world(const ray& r) const;
 

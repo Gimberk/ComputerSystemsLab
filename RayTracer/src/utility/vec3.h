@@ -40,6 +40,14 @@ public:
 		return *this;
 	}
 
+	bool operator==(const vec3 v) {
+		return x == v.x && y == v.y && z == v.z;
+	}
+
+	bool operator!=(const vec3 v) {
+		return !((*this) == v);
+	}
+	
 	double length() const { return sqrt(length_squared()); }
 
 	double length_squared() const { return x * x + y * y + z * z; }

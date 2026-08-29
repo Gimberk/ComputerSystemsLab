@@ -14,9 +14,10 @@ void world::create_object(const std::shared_ptr<primitive>& obj) {
 
 const bool world::find_any_hit(const ray & r) const {
 	for (const std::shared_ptr<primitive>& obj : get_objects()) if (obj->intersect(r).valid) return true;
+	return false;
 }
 
-const std::vector<std::shared_ptr<primitive>> world::get_objects() const { return objects; }
+const std::vector<std::shared_ptr<primitive>>& world::get_objects() const { return objects; }
 
 const hit_record world::intersect_world(const ray& r) const {
 	double closest_so_far = std::numeric_limits<double>::infinity();
@@ -35,7 +36,10 @@ const hit_record world::intersect_world(const ray& r) const {
 	else return hit_record{ closest_so_far, closest_obj };
 }
 
+static std::atomic<uint16_t> ray_count = 0;
+
 color world::ray_color(const ray& r, const int depth) const {
+	ray_count++;
 	if (depth > max_ray_depth) return world::BLACK;
 
 	hit_record record = intersect_world(r);
@@ -64,6 +68,7 @@ color world::ray_color(const ray& r, const int depth) const {
 }
 
 const std::vector<unsigned char>* world::generate_image() {
+	ray_count = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
 	for (int row = 0; row < cam->image_height; row++) {
@@ -85,17 +90,28 @@ const std::vector<unsigned char>* world::generate_image() {
 
 			average_color /= cam->rays_per_pixel;
 
-			// write the average color to the framebuffer
-			const int index = (row * cam->image_width + col) * 3;
-			framebuffer[index] = static_cast<unsigned char>(255.999 * average_color.x);
-			framebuffer[index + 1] = static_cast<unsigned char>(255.999 * average_color.y);
-			framebuffer[index + 2] = static_cast<unsigned char>(255.999 * average_color.z);
+			// add this color to the accumulation of each frame so far
+			cam->append_accumulation(col, row, average_color);
+		}
+	}
+
+	cam->increment_accumulation_count(); // only call once the frame is finished, not every time you update a pixel dumbass. god damn.
+
+	const std::vector<color>& accumulation = cam->get_final_accumulation();
+	for (int y = 0; y < cam->image_height; y++) {
+		for (int x = 0; x < cam->image_width; x++) {
+			const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, index = y * cam->image_width + x;
+			const color averaged = accumulation[reverse_index] / cam->get_accumulation_count();
+
+			framebuffer[3 * index] = static_cast<unsigned char>(255.999 * averaged.x);
+			framebuffer[3 * index + 1] = static_cast<unsigned char>(255.999 * averaged.y);
+			framebuffer[3 * index + 2] = static_cast<unsigned char>(255.999 * averaged.z);
 		}
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
 	double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec" << '\n';
+	std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
 	return &framebuffer;
 }

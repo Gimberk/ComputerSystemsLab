@@ -153,6 +153,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\RayTracer.cpp" />
     <ClCompile Include="src\hittables\sphere.cpp" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <None Include="img.ppm" />
     <None Include="libs\GLFW\lib\glfw3.dll" />
+    <None Include="Profiler\Report20260820-2151.diagsession" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\GLFW\lib\glfw3.lib" />

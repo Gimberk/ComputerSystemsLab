@@ -71,6 +71,12 @@ int main()
 
 	while (!glfwWindowShouldClose(window)) {
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cam.center -= cam.forward_vector() * cam.speed;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cam.center += cam.forward_vector() * cam.speed;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cam.center += cam.right_vector() * cam.speed;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cam.center -= cam.right_vector() * cam.speed;
+
+		cam.update_camera();
 
 		// upload the ray tracer data to the texture
 		glBindTexture(GL_TEXTURE_2D, texture);
