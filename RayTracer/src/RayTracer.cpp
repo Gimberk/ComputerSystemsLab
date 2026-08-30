@@ -13,13 +13,43 @@
 
 #include "hittables/sphere.h"
 
+bool first_mouse = true;
+float last_x, last_y;
+
+camera cam;
+
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
+	const float x_pos = static_cast<float>(x_in), y_pos = static_cast<float>(y_in);
+
+	if (first_mouse) {
+		last_x = x_pos;
+		last_y = y_pos;
+		first_mouse = false;
+	}
+
+	float x_offset = x_pos - last_x;
+	float y_offset = y_pos - last_y;
+	last_x = x_pos;
+	last_y = y_pos;
+
+	const float sensitivity = 0.1f;
+	x_offset *= sensitivity;
+	y_offset *= sensitivity;
+
+	cam.yaw -= x_offset;
+	cam.pitch -= y_offset;
+
+	cam.pitch = std::clamp(cam.pitch, -89.0, 89.0);
+			
+	cam.update_camera();
+}
+
 int main()
 {
-	camera cam;
 	world scene(&cam);
 
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, std::make_unique<material>(color(0.67, 0.5, 1))));
@@ -69,12 +99,20 @@ int main()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // unbind the fbo
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
+
 	while (!glfwWindowShouldClose(window)) {
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cam.center -= cam.forward_vector() * cam.speed;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cam.center += cam.forward_vector() * cam.speed;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cam.center += cam.right_vector() * cam.speed;
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cam.center -= cam.right_vector() * cam.speed;
+
+		vec3 directional;
+
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) directional += cam.forward_vector();
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) directional -= cam.forward_vector();
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) directional -= cam.right_vector();
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) directional += cam.right_vector();
+
+		if (!directional.near_zero()) cam.center += unit_vector(directional) * cam.speed;
 
 		cam.update_camera();
 

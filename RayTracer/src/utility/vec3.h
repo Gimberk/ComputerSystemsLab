@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iostream>
 
+#include <numbers>
+
 class vec3 {
 public:
 	double x, y, z;
@@ -43,10 +45,6 @@ public:
 	bool operator==(const vec3 v) {
 		return x == v.x && y == v.y && z == v.z;
 	}
-
-	bool operator!=(const vec3 v) {
-		return !((*this) == v);
-	}
 	
 	double length() const { return sqrt(length_squared()); }
 
@@ -58,6 +56,14 @@ public:
 using point3 = vec3;
 
 // inline some functions as smaller functions can be copied a ton to save processing time
+
+inline double to_radians(double degrees) {
+	return degrees * (std::numbers::pi / 180);
+}
+
+inline double to_degrees(double radians) {
+	return radians * (180 / std::numbers::pi);
+}
 
 inline std::ostream& operator<<(std::ostream& out, const vec3& v) {
 	return out << v.x << ' ' << v.y << ' ' << v.z;

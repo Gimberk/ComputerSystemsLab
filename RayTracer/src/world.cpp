@@ -112,6 +112,6 @@ const std::vector<unsigned char>* world::generate_image() {
 	auto end = std::chrono::high_resolution_clock::now();
 	double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
+	//std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
 	return &framebuffer;
 }

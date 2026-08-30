@@ -10,7 +10,7 @@
 class camera {
 public:
 	// a bunch of lame camera math stuff
-	const double aspect_ratio = 16 / 9;
+	const double aspect_ratio = 16.0 / 9.0;
 	const int image_width = 600; // 400 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
 
 	double focal_length = 1;
@@ -29,17 +29,23 @@ public:
 
 	const vec3 viewport_u = vec3(viewport_width, 0, 0), viewport_v = vec3(0, -viewport_height, 0);
 
-	const vec3 pixel_delta_u = viewport_u / image_width;
-	const vec3 pixel_delta_v = viewport_v / image_height;
+	vec3 pixel_delta_u = viewport_u / image_width;
+	vec3 pixel_delta_v = viewport_v / image_height;
 
 	vec3 viewport_uppper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
 	vec3 pixel00_location = viewport_uppper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
 	camera() : center(vec3(0, 0, 0)), accumulation(image_width * image_height), accumulation_count(0) {}
 
-	const vec3 forward_vector() const { return vec3(std::cos(pitch) * std::sin(yaw), sin(pitch), cos(pitch) * cos(yaw)); }
+	const vec3 forward_vector() const {
+		const double pitch_rad = to_radians(pitch), yaw_rad = to_radians(yaw);
+		return vec3(std::cos(pitch_rad) * std::sin(yaw_rad), sin(pitch_rad), cos(pitch_rad) * cos(yaw_rad));
+	}
 
-	const vec3 right_vector() const { return vec3(std::cos(yaw), 0, -std::sin(yaw)); }
+	const vec3 right_vector() const { 
+		const double yaw_rad = to_radians(yaw);
+		return vec3(std::cos(yaw_rad), 0, -std::sin(yaw_rad));
+	}
 
 	void append_accumulation(const int x, const int y, const color col);
 
@@ -51,12 +57,35 @@ public:
 
 	void increment_accumulation_count() { accumulation_count++; }
 
-	void update_camera() {
-		vec3 n_viewport_uppper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-		if (n_viewport_uppper_left != viewport_uppper_left) clear_accumulation();
+	void update_camera()
+	{
+		const vec3 vup(0, 1, 0);
 
-		viewport_uppper_left = n_viewport_uppper_left;
-		pixel00_location = viewport_uppper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+		const vec3 w = -unit_vector(forward_vector());
+		const vec3 u = unit_vector(cross(vup, w));
+		const vec3 v = cross(w, u);
+
+		const vec3 viewport_u = viewport_width * u;
+		const vec3 viewport_v = viewport_height * -v;
+
+		pixel_delta_u = viewport_u / image_width;
+		pixel_delta_v = viewport_v / image_height;
+
+		const vec3 viewport_upper_left =
+			center
+			- w * focal_length
+			- viewport_u / 2
+			- viewport_v / 2;
+
+		const vec3 new_pixel00_location =
+			viewport_upper_left
+			+ 0.5 * pixel_delta_u
+			+ 0.5 * pixel_delta_v;
+
+		if (new_pixel00_location != pixel00_location)
+			clear_accumulation();
+
+		pixel00_location = new_pixel00_location;
 	}
 
 private:
