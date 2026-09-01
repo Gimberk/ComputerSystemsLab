@@ -1,15 +1,12 @@
+#ifdef _MSC_VER
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
+#endif
 
 #include "world.h"
 
 #include "utility/color.h"
-#include "utility/ray.h"
+#include "utility/vec3.h"
 
 #include "hittables/sphere.h"
 
@@ -18,6 +15,8 @@ float last_x, last_y;
 
 camera cam;
 
+// mouse input is only necessary when compiled on home device
+#ifdef _MSC_VER
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -47,14 +46,21 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 			
 	cam.update_camera();
 }
+#endif
 
 int main()
 {
 	world scene(&cam);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, std::make_unique<material>(color(0.67, 0.5, 1))));
-	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, std::make_unique<material>(color(0.4, 0.95, 0.4))));
+	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
+		std::make_unique<material>(color(0.67, 0.5, 1))));
+	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
+		std::make_unique<material>(color(0.4, 0.95, 0.4))));
 	
+	std::cout << "World Created!" << '\n';
+
+	// create the window; only run when compiled on home device
+	#ifdef _MSC_VER
 	if (!glfwInit()) {
 		std::cerr << "Failed to initialize GLFW\n";
 		return -1;
@@ -136,4 +142,5 @@ int main()
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
+	#endif
 }

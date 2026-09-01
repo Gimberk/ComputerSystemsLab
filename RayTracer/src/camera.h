@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <vector>
 
 #include "utility/vec3.h"

@@ -5,6 +5,8 @@
 
 #include <numbers>
 
+constexpr double PI = 3.14159265358979323846;
+
 class vec3 {
 public:
 	double x, y, z;
@@ -42,9 +44,15 @@ public:
 		return *this;
 	}
 
-	bool operator==(const vec3 v) {
+	bool operator==(const vec3 v) const {
 		return x == v.x && y == v.y && z == v.z;
 	}
+
+	#ifndef _MSC_VER
+	bool operator!=(const vec3 v) const{
+		return !((*this) == v); 
+	}
+	#endif
 	
 	double length() const { return sqrt(length_squared()); }
 
@@ -58,11 +66,11 @@ using point3 = vec3;
 // inline some functions as smaller functions can be copied a ton to save processing time
 
 inline double to_radians(double degrees) {
-	return degrees * (std::numbers::pi / 180);
+	return degrees * (PI / 180);
 }
 
 inline double to_degrees(double radians) {
-	return radians * (180 / std::numbers::pi);
+	return radians * (180 / PI);
 }
 
 inline std::ostream& operator<<(std::ostream& out, const vec3& v) {

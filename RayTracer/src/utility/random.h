@@ -1,10 +1,13 @@
 #pragma once
 
+#include "vec3.h"
 #include <cstdint>
 #include <numbers>
 #include <cmath>
 
 namespace utility {
+	constexpr double PI = 3.14159265358979323846;
+
 	inline float random_float32() {
 		thread_local uint32_t state = 3452529; // seed
 
@@ -33,7 +36,7 @@ namespace utility {
 		const float u = random_float32(), v = random_float32();
 
 		// generate a random spherical coordinate
-		const double theta = 2 * std::numbers::pi * u;
+		const double theta = 2 * PI * u;
 		const double phi = acos(2 * v - 1);
 
 		// convert to cartesian coords
