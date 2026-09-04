@@ -43,9 +43,13 @@ public:
 
 	color ray_color(const ray&, const int = 0) const;
 
-	const std::vector<unsigned char>* generate_image();
+	const std::vector<unsigned char>* generate_image(bool output = true);
+
+	const double get_time_for_last_frame() const { return time_for_last_frame; }
 
 private:
+	double time_for_last_frame = 0;	
+
 	std::vector<std::shared_ptr<primitive>> objects;
 	std::vector<unsigned char> framebuffer;
 

@@ -10,6 +10,11 @@
 
 #include "hittables/sphere.h"
 
+#include <filesystem>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "utility/stb_image_write.h"
+
 bool first_mouse = true;
 float last_x, last_y;
 
@@ -56,8 +61,6 @@ int main()
 		std::make_unique<material>(color(0.67, 0.5, 1))));
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
 		std::make_unique<material>(color(0.4, 0.95, 0.4))));
-	
-	std::cout << "World Created!" << '\n';
 
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
@@ -142,5 +145,22 @@ int main()
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
+	#else
+	const int accumulation_count = 786;
+	
+	double total_time_taken = 0;
+	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){
+		scene.generate_image(false);
+		total_time_taken += scene.get_time_for_last_frame();
+	}
+	
+	const std::vector<unsigned char>* frame = scene.generate_image();
+
+	const int channels = 3;
+	const int stride_in_bytes = cam.image_width * channels;
+
+	stbi_write_png("out.png", cam.image_width, cam.image_height, channels, frame->data(), stride_in_bytes);
+	std::cout << "\nImage written to " << std::filesystem::current_path() << " in " << total_time_taken << " seconds" << '\n' 
+		<< "\t- at " << total_time_taken / accumulation_count << " seconds per frame\n\n";
 	#endif
 }

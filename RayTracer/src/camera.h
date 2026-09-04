@@ -12,7 +12,7 @@ class camera {
 public:
 	// a bunch of lame camera math stuff
 	const double aspect_ratio = 16.0 / 9.0;
-	const int image_width = 600; // 400 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
+	const int image_width = 600; // 600 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
 
 	double focal_length = 1;
 	point3 center;

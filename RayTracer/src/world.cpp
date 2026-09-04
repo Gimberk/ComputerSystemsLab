@@ -67,7 +67,7 @@ color world::ray_color(const ray& r, const int depth) const {
 	return direct_light + obj_color * ray_color(scattered, depth + 1);
 }
 
-const std::vector<unsigned char>* world::generate_image() {
+const std::vector<unsigned char>* world::generate_image(bool output) {
 	ray_count = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -97,11 +97,19 @@ const std::vector<unsigned char>* world::generate_image() {
 
 	cam->increment_accumulation_count(); // only call once the frame is finished, not every time you update a pixel dumbass. god damn.
 
+	if (!output){
+		auto end = std::chrono::high_resolution_clock::now();
+		time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
+
+		return nullptr;
+	}
+
 	const std::vector<color>& accumulation = cam->get_final_accumulation();
 	for (int y = 0; y < cam->image_height; y++) {
 		for (int x = 0; x < cam->image_width; x++) {
-			const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, index = y * cam->image_width + x;
-			const color averaged = accumulation[reverse_index] / cam->get_accumulation_count();
+			const int index = y * cam->image_width + x;
+			//const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, 
+			const color averaged = accumulation[index] / cam->get_accumulation_count();
 
 			framebuffer[3 * index] = static_cast<unsigned char>(255.999 * averaged.x);
 			framebuffer[3 * index + 1] = static_cast<unsigned char>(255.999 * averaged.y);
@@ -110,7 +118,7 @@ const std::vector<unsigned char>* world::generate_image() {
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
-	double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
+	double time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
 	//std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
 	return &framebuffer;
