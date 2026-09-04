@@ -136,7 +136,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// blit the pixels to the screen
-		glBlitFramebuffer(0, 0, cam.image_width, cam.image_height, 0, 0, cam.image_width, cam.image_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, cam.image_width, cam.image_height, 0, cam.image_height, cam.image_width, 0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
