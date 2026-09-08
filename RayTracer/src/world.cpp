@@ -71,31 +71,26 @@ const std::vector<unsigned char>* world::generate_image(bool output) {
 	ray_count = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
-	for (int row = 0; row < cam->image_height; row++) {
-		for (int col = 0; col < cam->image_width; col++) {
-			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * col + cam->pixel_delta_v * row;
-			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
+	cam->threads.clear();
 
-			for (int i = 0; i < cam->rays_per_pixel; i++) {
-				double offset_u = utility::random_double64() - 0.5;
-				double offset_v = utility::random_double64() - 0.5;
+	int rows_per_thread = cam->image_height / cam->max_threads;
+	std::cout << rows_per_thread << '\n';
 
-				auto sample_point = pixel_center + (cam->pixel_delta_u * offset_u) + (cam->pixel_delta_v * offset_v);
+	for (unsigned int i = 0; i < cam->max_threads; i++){
+		int startY = i * rows_per_thread;
+		int endY = (i == cam->max_threads - 1) ? cam->image_height : startY + rows_per_thread;
 
-				auto ray_direction = sample_point - cam->center;
-				ray r(cam->center, ray_direction);
+		std::cout << "For thread " << i << ": (" << startY << ", " << endY << ")\n";
 
-				average_color += ray_color(r);
-			}
+		cam->threads.emplace_back(&world::process_pixel_subsection, this, startY, endY);
+	}
 
-			average_color /= cam->rays_per_pixel;
-
-			// add this color to the accumulation of each frame so far
-			cam->append_accumulation(col, row, average_color);
-		}
+	for (unsigned int i = 0; i < cam->max_threads; i++){
+		if (cam->threads[i].joinable()) cam->threads[i].join();
 	}
 
 	cam->increment_accumulation_count(); // only call once the frame is finished, not every time you update a pixel dumbass. god damn.
+										 // well that's rather mean 	
 
 	if (!output){
 		auto end = std::chrono::high_resolution_clock::now();
@@ -122,4 +117,34 @@ const std::vector<unsigned char>* world::generate_image(bool output) {
 
 	//std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
 	return &framebuffer;
+}
+
+void world::process_pixel_subsection(int startY, int endY) {
+	std::cout << "(" << startY << ", " << endY << ") done.\n";
+	for (int r = startY; r <= endY; r++){
+		for (int c = 0; c < cam->image_width; c++){
+			// broken code that is causing segfaults:
+			/*
+			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * c + cam->pixel_delta_v * r;
+			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
+
+			for (int i = 0; i < cam->rays_per_pixel; i++) {
+				double offset_u = utility::random_double64() - 0.5;
+				double offset_v = utility::random_double64() - 0.5;
+
+				auto sample_point = pixel_center + (cam->pixel_delta_u * offset_u) + (cam->pixel_delta_v * offset_v);
+
+				auto ray_direction = sample_point - cam->center;
+				ray r(cam->center, ray_direction);
+
+				average_color += ray_color(r);
+			}
+
+			average_color /= cam->rays_per_pixel;
+
+			// add this color to the accumulation of each frame so far
+			cam->append_accumulation(c, r, average_color);
+			*/
+		}
+	}
 }

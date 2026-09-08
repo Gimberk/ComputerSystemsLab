@@ -48,6 +48,8 @@ public:
 	const double get_time_for_last_frame() const { return time_for_last_frame; }
 
 private:
+	void process_pixel_subsection(int startY, int endY);
+
 	double time_for_last_frame = 0;	
 
 	std::vector<std::shared_ptr<primitive>> objects;

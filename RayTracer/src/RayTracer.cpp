@@ -136,7 +136,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// blit the pixels to the screen
-		glBlitFramebuffer(0, 0, cam.image_width, cam.image_height, 0, 0, cam.image_width, cam.image_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, cam.image_width, cam.image_height, 0, cam.image_height, cam.image_width, 0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -146,7 +146,7 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 786;
+	const int accumulation_count = 1;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){
@@ -162,5 +162,8 @@ int main()
 	stbi_write_png("out.png", cam.image_width, cam.image_height, channels, frame->data(), stride_in_bytes);
 	std::cout << "\nImage written to " << std::filesystem::current_path() << " in " << total_time_taken << " seconds" << '\n' 
 		<< "\t- at " << total_time_taken / accumulation_count << " seconds per frame\n\n";
+
+	std::cout << "Max Thread Count: " << cam.max_threads << '\n';
+
 	#endif
 }
