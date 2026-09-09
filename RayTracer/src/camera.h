@@ -16,16 +16,23 @@ class camera {
 public:
 	// a bunch of lame camera math stuff
 	const double aspect_ratio = 16.0 / 9.0;
+<<<<<<< HEAD
 	const int image_width = 10; // 600 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
+=======
+	const int image_width = 800; // 600 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
+>>>>>>> ab552fcd78184a57b463a63e66cb78a57098cbd8
 
 	double focal_length = 1;
 	point3 center;
 
 	const int rays_per_pixel = 1;
 
+<<<<<<< HEAD
 	unsigned int max_threads = std::min(std::thread::hardware_concurrency(), (unsigned int)5);
 	std::vector<std::thread> threads;
 
+=======
+>>>>>>> ab552fcd78184a57b463a63e66cb78a57098cbd8
 	double pitch = 0, yaw = 180;
 
 	double speed = 0.1;
