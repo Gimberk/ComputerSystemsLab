@@ -6,11 +6,15 @@
             "label": "Build C++ Project",
             "command": "g++",
             "args": [
+                "-std=c++20",
                 "-g",
-                "${workspaceFolder}/RayTracer/src/main.cpp",
+                //"${workspaceFolder}/RayTracer/src/RayTracer.cpp",
+                "${workspaceFolder}/RayTracer/src/**/*.cpp",
                 "${workspaceFolder}/RayTracer/src/*.cpp",
+                "-I",
+                "${workspaceFolder}/RayTracer/src",
                 "-o",
-                "${workspaceFolder}/bin/output"
+                "${workspaceFolder}/bin/output/main"
             ],
             "group": {
                 "kind": "build",

@@ -74,13 +74,13 @@ const std::vector<unsigned char>* world::generate_image(bool output) {
 	cam->threads.clear();
 
 	int rows_per_thread = cam->image_height / cam->max_threads;
-	std::cout << rows_per_thread << '\n';
+	//std::cout << rows_per_thread << '\n';
 
 	for (unsigned int i = 0; i < cam->max_threads; i++){
 		int startY = i * rows_per_thread;
 		int endY = (i == cam->max_threads - 1) ? cam->image_height : startY + rows_per_thread;
 
-		std::cout << "For thread " << i << ": (" << startY << ", " << endY << ")\n";
+		//std::cout << "For thread " << i << ": (" << startY << ", " << endY << ")\n";
 
 		cam->threads.emplace_back(&world::process_pixel_subsection, this, startY, endY);
 	}
@@ -120,11 +120,10 @@ const std::vector<unsigned char>* world::generate_image(bool output) {
 }
 
 void world::process_pixel_subsection(int startY, int endY) {
-	std::cout << "(" << startY << ", " << endY << ") done.\n";
-	for (int r = startY; r <= endY; r++){
+	//std::cout << "(" << startY << ", " << endY << ") done.\n";
+	for (int r = startY; r < endY; r++){
 		for (int c = 0; c < cam->image_width; c++){
 			// broken code that is causing segfaults:
-			/*
 			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * c + cam->pixel_delta_v * r;
 			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
 
@@ -144,7 +143,6 @@ void world::process_pixel_subsection(int startY, int endY) {
 
 			// add this color to the accumulation of each frame so far
 			cam->append_accumulation(c, r, average_color);
-			*/
 		}
 	}
 }
