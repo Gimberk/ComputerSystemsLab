@@ -55,16 +55,33 @@ color world::ray_color(const ray& r, const int depth) const {
 	}
 
 	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
+	const double metallic = closest_obj->has_material() ? closest_obj->mat->metallic : 0.0;
+	const double roughness = closest_obj->has_material() ? closest_obj->mat->roughness : 0.0;
+	
 	const vec3 normal = closest_obj->get_normal(r.point(record.t));
+	const point3 hit_point = r.point(record.t);
 
 	color direct_light = world::BLACK;
-	const ray shadow_ray(r.point(record.t), sun_direction);
+	const ray shadow_ray(hit_point, sun_direction);
 	if (!find_any_hit(shadow_ray)) direct_light = obj_color * sun_color * std::max(0.0, dot(normal, sun_direction));
 
-	vec3 scatter_direction = normal + utility::random_unit_vector();
-	if (scatter_direction.near_zero()) scatter_direction = normal;
+	vec3 diffuse_direction = normal + utility::random_unit_vector();
+	if (diffuse_direction.near_zero()) diffuse_direction = normal;
 
-	ray scattered(r.point(record.t), scatter_direction);
+	// reflect formula: v - 2(v*n) * n
+	const vec3 reflect_direction = r.direction() - 2.0 * dot(r.direction(), normal) * normal;
+	const vec3 metallic_direction = reflect_direction + roughness * utility::random_unit_vector();
+
+	vec3 final_scatter_direction;
+	if (utility::random_double64() < metallic) {
+		final_scatter_direction = metallic_direction;
+
+		// prevent scattering into the object
+		if (dot(final_scatter_direction, normal) <= 0.0) return direct_light;
+	}
+	else final_scatter_direction = diffuse_direction;
+	
+	ray scattered(hit_point, final_scatter_direction);
 	return direct_light + obj_color * ray_color(scattered, depth + 1);
 }
 
