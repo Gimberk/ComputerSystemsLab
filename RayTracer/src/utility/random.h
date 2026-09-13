@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec3.h"
+
 #include <cstdint>
 #include <numbers>
 #include <cmath>

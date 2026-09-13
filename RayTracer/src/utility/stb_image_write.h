@@ -148,6 +148,8 @@ LICENSE
 
 */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef INCLUDE_STB_IMAGE_WRITE_H
 #define INCLUDE_STB_IMAGE_WRITE_H
 
@@ -773,11 +775,7 @@ static int stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, f
 #ifdef __STDC_LIB_EXT1__
       len = sprintf_s(buffer, sizeof(buffer), "EXPOSURE=          1.0000000000000\n\n-Y %d +X %d\n", y, x);
 #else
-      #ifdef MSC_VER
-      len = sprintf_s(buffer, "EXPOSURE=          1.0000000000000\n\n-Y %d +X %d\n", y, x);
-      #else
-      len = sprintf(buffer, "EXPOSURE=          1.0000000000000\n\n-Y %d +X %d\n", y, x);
-      #endif
+    len = sprintf_s(buffer, "EXPOSURE=          1.0000000000000\n\n-Y %d +X %d\n", y, x);
 #endif
       s->func(s->context, buffer, len);
 

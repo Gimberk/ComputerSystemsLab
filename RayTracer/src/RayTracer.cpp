@@ -8,6 +8,8 @@
 #include "utility/color.h"
 #include "utility/vec3.h"
 
+#include "utility/thread_pool.h"
+
 #include "hittables/sphere.h"
 
 #include <filesystem>
@@ -55,6 +57,8 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 
 int main()
 {
+	thread_pool pool(cam.max_threads);
+
 	world scene(&cam);
 
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
@@ -112,6 +116,7 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 
 	while (!glfwWindowShouldClose(window)) {
+		// inputs - to be moved later
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
 		vec3 directional;
@@ -127,7 +132,8 @@ int main()
 
 		// upload the ray tracer data to the texture
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cam.image_width, cam.image_height, GL_RGB, GL_UNSIGNED_BYTE, scene.generate_image()->data());
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cam.image_width, cam.image_height, 
+						GL_RGB, GL_UNSIGNED_BYTE, scene.generate_image(&pool)->data());
 
 		// configure blit buffers
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
@@ -150,11 +156,11 @@ int main()
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){
-		scene.generate_image(false);
+		scene.generate_image(&pool, false);
 		total_time_taken += scene.get_time_for_last_frame();
 	}
 	
-	const std::vector<unsigned char>* frame = scene.generate_image();
+	const std::vector<unsigned char>* frame = scene.generate_image(&pool);
 
 	const int channels = 3;
 	const int stride_in_bytes = cam.image_width * channels;

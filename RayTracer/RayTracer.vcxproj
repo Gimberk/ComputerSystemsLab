@@ -159,6 +159,7 @@
     <ClCompile Include="src\hittables\sphere.cpp" />
     <ClCompile Include="src\utility\color.cpp" />
     <ClCompile Include="src\world.cpp" />
+    <ClCompile Include="src\utility\thread_pool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
@@ -171,8 +172,10 @@
     <ClInclude Include="src\utility\hit_record.h" />
     <ClInclude Include="src\utility\random.h" />
     <ClInclude Include="src\utility\ray.h" />
+    <ClInclude Include="src\utility\stb_image_write.h" />
     <ClInclude Include="src\utility\vec3.h" />
     <ClInclude Include="src\world.h" />
+    <ClInclude Include="src\utility\thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="img.ppm" />

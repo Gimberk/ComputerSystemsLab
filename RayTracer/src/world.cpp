@@ -1,6 +1,7 @@
 #include "world.h"
 
 #include <chrono>
+#include <future>
 
 const color world::BLACK(0, 0, 0);
 const color world::WHITE(1, 1, 1);
@@ -67,30 +68,29 @@ color world::ray_color(const ray& r, const int depth) const {
 	return direct_light + obj_color * ray_color(scattered, depth + 1);
 }
 
-const std::vector<unsigned char>* world::generate_image(bool output) {
+const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool output) {
 	ray_count = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
-	cam->threads.clear();
+	// for multithreading
+	std::vector<std::future<void>> frame_futures;
+	frame_futures.reserve(cam->max_threads);
 
-	int rows_per_thread = cam->image_height / cam->max_threads;
-	//std::cout << rows_per_thread << '\n';
+	int rows_per_thread = cam->image_height  / cam->max_threads;
+	
+	// assign a number of rows to each available thread
+	for (unsigned int i = 0; i < cam->max_threads; i++) {
+		int start_y = i * rows_per_thread;
+		int end_y = (i == cam->max_threads - 1) ? cam->image_height : start_y + rows_per_thread;
 
-	for (unsigned int i = 0; i < cam->max_threads; i++){
-		int startY = i * rows_per_thread;
-		int endY = (i == cam->max_threads - 1) ? cam->image_height : startY + rows_per_thread;
-
-		//std::cout << "For thread " << i << ": (" << startY << ", " << endY << ")\n";
-
-		cam->threads.emplace_back(&world::process_pixel_subsection, this, startY, endY);
+		frame_futures.emplace_back(pool->enqueue(&world::process_pixel_subsection, this, start_y, end_y));
 	}
 
-	for (unsigned int i = 0; i < cam->max_threads; i++){
-		if (cam->threads[i].joinable()) cam->threads[i].join();
-	}
+	// make sure each thread completes their rows before continuing.
+	for (auto& future : frame_futures) future.wait();
 
 	cam->increment_accumulation_count(); // only call once the frame is finished, not every time you update a pixel dumbass. god damn.
-										 // well that's rather mean 	
+										 // well that's rather mean
 
 	if (!output){
 		auto end = std::chrono::high_resolution_clock::now();
@@ -121,10 +121,10 @@ const std::vector<unsigned char>* world::generate_image(bool output) {
 
 void world::process_pixel_subsection(int startY, int endY) {
 	//std::cout << "(" << startY << ", " << endY << ") done.\n";
-	for (int r = startY; r < endY; r++){
+	for (int row = startY; row < endY; row++){
 		for (int c = 0; c < cam->image_width; c++){
 			// broken code that is causing segfaults:
-			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * c + cam->pixel_delta_v * r;
+			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * c + cam->pixel_delta_v * row;
 			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
 
 			for (int i = 0; i < cam->rays_per_pixel; i++) {
@@ -142,7 +142,7 @@ void world::process_pixel_subsection(int startY, int endY) {
 			average_color /= cam->rays_per_pixel;
 
 			// add this color to the accumulation of each frame so far
-			cam->append_accumulation(c, r, average_color);
+			cam->append_accumulation(c, row, average_color);
 		}
 	}
 }

@@ -11,6 +11,8 @@
 #include "utility/color.h"
 #include "utility/vec3.h"
 
+#include "utility/thread_pool.h"
+
 #include "utility/random.h"
 
 class world {
@@ -43,7 +45,7 @@ public:
 
 	color ray_color(const ray&, const int = 0) const;
 
-	const std::vector<unsigned char>* generate_image(bool output = true);
+	const std::vector<unsigned char>* generate_image(thread_pool* pool, bool output = true);
 
 	const double get_time_for_last_frame() const { return time_for_last_frame; }
 
