@@ -4,7 +4,6 @@
 #include <atomic>
 #include <thread>
 #include <vector>
-
 #include "utility/vec3.h"
 #include "utility/color.h"
 
@@ -23,7 +22,7 @@ public:
 
 	const int rays_per_pixel = 1;
 
-	unsigned int max_threads = std::min(std::thread::hardware_concurrency(), (unsigned int)5);
+	unsigned int max_threads = std::max(std::thread::hardware_concurrency(), (unsigned int)5);
 	std::vector<std::thread> threads;
 
 	double pitch = 0, yaw = 180;

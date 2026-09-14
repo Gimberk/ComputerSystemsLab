@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include "hittables/skybox.h"
+
 #include <chrono>
 #include <future>
 

@@ -61,6 +61,7 @@ int main()
 
 	world scene(&cam);
 
+	/*
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
 		std::make_unique<material>(color(0.67, 0.5, 1), 0.8, 0.3674)));
 
@@ -69,7 +70,8 @@ int main()
 
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
 		std::make_unique<material>(color(0.4, 0.95, 0.4))));
-
+	*/
+	
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
 	if (!glfwInit()) {
@@ -156,12 +158,14 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 500;
+	const int accumulation_count = 80;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){
 		scene.generate_image(&pool, false);
 		total_time_taken += scene.get_time_for_last_frame();
+
+		if (frame_ct % 10 == 0) std::cout << "Accumulation: " << frame_ct << '\n';
 	}
 	
 	const std::vector<unsigned char>* frame = scene.generate_image(&pool);
