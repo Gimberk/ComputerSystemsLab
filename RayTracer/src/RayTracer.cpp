@@ -14,7 +14,6 @@
 
 #include <filesystem>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "utility/stb_image_write.h"
 
 bool first_mouse = true;
