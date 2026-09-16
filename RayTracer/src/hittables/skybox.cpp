@@ -2,9 +2,10 @@
 
 #include "../utility/random.h"
 
+#include "../ext/stb_image.h"
+
 #include <algorithm>
 #include <cmath>
-#include "../utility/tinyexr.h"
 
 void skybox::get_spherical_to_uv(const vec3& pt, double& u, double& v) const {
     // use some fun trigonometry to find these
@@ -17,18 +18,12 @@ void skybox::get_spherical_to_uv(const vec3& pt, double& u, double& v) const {
 
 color skybox::get_texture_sky_color(const ray& r) const {
     int width, height, channels;
-    float* data = nullptr;
-    const char* error = nullptr;
 
-    int ret = LoadEXR(&data, &width, &height, skyboxFile.data(), &error);
+    float* data = stbi_loadf(skyboxFile.data(), &width, &height, &channels, 3);
 
-    if (ret != TINYEXR_SUCCESS) {
-        if (error) {
-            std::cerr << "EXR Error: " << error << std::endl;
-            FreeEXRErrorMessage(error);
-        }
-
-        return color(0, 0, 0);
+    if (!data){
+        std::cerr << "Failed to load HDR image: " << skyboxFile << "\nReason: " << stbi_failure_reason() << std::endl;
+        return color(0,0,0);
     }
 
     const vec3 unit_direction = unit_vector(r.direction());
@@ -43,7 +38,7 @@ color skybox::get_texture_sky_color(const ray& r) const {
     const int index = 4 * (y * width + x);
     const float r_val = data[index], g_val = data[index + 1], b_val = data[index + 2];
 
-    free(data);
+    stbi_image_free(data);
 
     return color(r_val, g_val, b_val);
 }

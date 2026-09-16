@@ -3,9 +3,6 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#define TINYEXR_IMPLEMENTATION
-#include "utility/tinyexr.h"
-
 #include "world.h"
 
 #include "utility/color.h"
@@ -19,7 +16,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "utility/stb_image_write.h"
+#include "ext/stb_image_write.h"
+#include "ext/stb_image.h"
 
 bool first_mouse = true;
 float last_x, last_y;
@@ -62,7 +60,7 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 int main()
 {
 	thread_pool pool(cam.max_threads);
-	skybox sky("../assets/sky_box.exr");
+	skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr");
 
 	world scene(&cam, sky);
 
