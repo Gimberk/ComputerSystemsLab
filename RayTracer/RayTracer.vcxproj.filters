@@ -36,6 +36,9 @@
     <ClCompile Include="src\utility\thread_pool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\hittables\skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\utility\vec3.h">
@@ -80,11 +83,21 @@
     <ClInclude Include="src\utility\thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\hittables\skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\tinyexr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\exr_reader.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="img.ppm" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
+    <None Include="assets\sky_box.exr" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\GLFW\lib\glfw3.lib" />

@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\hittables\skybox.cpp" />
     <ClCompile Include="src\RayTracer.cpp" />
     <ClCompile Include="src\hittables\sphere.cpp" />
     <ClCompile Include="src\utility\color.cpp" />
@@ -165,19 +166,23 @@
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\hittables\skybox.h" />
     <ClInclude Include="src\hittables\sphere.h" />
     <ClInclude Include="src\hittables\material.h" />
     <ClInclude Include="src\utility\color.h" />
     <ClInclude Include="src\hittables\Primitive.h" />
+    <ClInclude Include="src\utility\exr_reader.hh" />
     <ClInclude Include="src\utility\hit_record.h" />
     <ClInclude Include="src\utility\random.h" />
     <ClInclude Include="src\utility\ray.h" />
     <ClInclude Include="src\utility\stb_image_write.h" />
+    <ClInclude Include="src\utility\tinyexr.h" />
     <ClInclude Include="src\utility\vec3.h" />
     <ClInclude Include="src\world.h" />
     <ClInclude Include="src\utility\thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\sky_box.exr" />
     <None Include="img.ppm" />
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="Profiler\Report20260820-2151.diagsession" />

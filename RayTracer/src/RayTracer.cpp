@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#define TINYEXR_IMPLEMENTATION
+#include "utility/tinyexr.h"
+
 #include "world.h"
 
 #include "utility/color.h"
@@ -14,6 +17,8 @@
 
 #include <filesystem>
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "utility/stb_image_write.h"
 
 bool first_mouse = true;
@@ -57,8 +62,9 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 int main()
 {
 	thread_pool pool(cam.max_threads);
+	skybox sky("../assets/sky_box.exr");
 
-	world scene(&cam);
+	world scene(&cam, sky);
 
 	/*
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
