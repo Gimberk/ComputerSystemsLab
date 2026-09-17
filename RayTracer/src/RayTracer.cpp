@@ -60,12 +60,15 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 int main()
 {
 	thread_pool pool(cam.max_threads);
-	//skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr");
-	skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr");
 
-	world scene(&cam, sky);
+	#ifndef _MSC_VER
+		skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr", 8);
+	#else
+		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr");
+	#endif
 
-	/*
+	world scene(&cam, &sky);
+
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
 		std::make_unique<material>(color(0.67, 0.5, 1), 0.8, 0.3674)));
 
@@ -74,7 +77,6 @@ int main()
 
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
 		std::make_unique<material>(color(0.4, 0.95, 0.4))));
-	*/
 	
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
@@ -162,7 +164,7 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 80;
+	const int accumulation_count = 300;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){

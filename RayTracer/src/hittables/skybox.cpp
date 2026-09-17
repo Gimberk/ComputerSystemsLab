@@ -7,11 +7,23 @@
 #include <algorithm>
 #include <cmath>
 
-skybox::skybox(std::string skyboxFile) : skyboxFile(skyboxFile) {
+skybox::skybox(std::string skyboxFile) : skyboxFile(skyboxFile), intensity_multiplier(1) {
+    // load data once in constructor, not every query bro.
     data = stbi_loadf(skyboxFile.data(), &width, &height, &channels, 3);
 
-    if (!data) {
-        std::cerr << "Failed to load HDR image: " << skyboxFile << "\nReason: " << stbi_failure_reason() << std::endl;
+    if (!data){
+        valid = false;
+        std::cerr << "Failed to load HDR image: " << skyboxFile << "\nReason: " << stbi_failure_reason() << '\n' << std::endl;
+    }
+}
+
+skybox::skybox(std::string skyboxFile, double intensity_multiplier) : skyboxFile(skyboxFile), intensity_multiplier(intensity_multiplier) {
+    // load data once in constructor, not every query bro.
+    data = stbi_loadf(skyboxFile.data(), &width, &height, &channels, 3);
+
+    if (!data){
+        valid = false;
+        std::cerr << "Failed to load HDR image: " << skyboxFile << "\nReason: " << stbi_failure_reason() << '\n' << std::endl;
     }
 }
 
@@ -37,7 +49,16 @@ color skybox::get_texture_sky_color(const ray& r) const {
     x = std::clamp(x, 0, width - 1);
     y = std::clamp(y, 0, height - 1);
 
+    y = height - y;
+
     const int index = 3 * (y * width + x);
 
-    return color(data[index], data[index + 1], data[index + 2]);
+    color out_color(data[index], data[index + 1], data[index + 2]);
+    out_color *= intensity_multiplier;
+
+    double L = 0.2126 * out_color.x + 0.7512 * out_color.y + 0.0722 * out_color.z;
+
+    out_color = out_color / (1 + L);
+
+    return out_color;
 }

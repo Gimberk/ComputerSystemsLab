@@ -428,7 +428,5 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-
-stb_image_write.h
 skybox.*
 sky_box.*
