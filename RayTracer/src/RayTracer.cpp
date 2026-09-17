@@ -60,7 +60,8 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 int main()
 {
 	thread_pool pool(cam.max_threads);
-	skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr");
+	//skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr");
+	skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr");
 
 	world scene(&cam, sky);
 

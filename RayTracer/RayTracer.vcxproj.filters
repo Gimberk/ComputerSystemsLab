@@ -77,19 +77,16 @@
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utility\stb_image_write.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\utility\thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\hittables\skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utility\tinyexr.h">
+    <ClInclude Include="src\ext\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utility\exr_reader.hh">
+    <ClInclude Include="src\ext\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,6 +95,7 @@
     <None Include="img.ppm" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
     <None Include="assets\sky_box.exr" />
+    <None Include="assets\sky_box.hdr" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\GLFW\lib\glfw3.lib" />
