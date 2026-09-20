@@ -161,6 +161,7 @@
     <ClCompile Include="src\utility\color.cpp" />
     <ClCompile Include="src\world.cpp" />
     <ClCompile Include="src\utility\thread_pool.cpp" />
+    <ClCompile Include="src\hittables\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
@@ -179,11 +180,11 @@
     <ClInclude Include="src\utility\vec3.h" />
     <ClInclude Include="src\world.h" />
     <ClInclude Include="src\utility\thread_pool.h" />
+    <ClInclude Include="src\hittables\triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\sky_box.exr" />
     <None Include="assets\sky_box.hdr" />
-    <None Include="img.ppm" />
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
   </ItemGroup>

@@ -39,6 +39,9 @@
     <ClCompile Include="src\hittables\skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\hittables\triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\utility\vec3.h">
@@ -89,10 +92,12 @@
     <ClInclude Include="src\ext\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\hittables\triangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\GLFW\lib\glfw3.dll" />
-    <None Include="img.ppm" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
     <None Include="assets\sky_box.exr" />
     <None Include="assets\sky_box.hdr" />

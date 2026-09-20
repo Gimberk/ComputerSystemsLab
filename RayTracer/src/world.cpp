@@ -66,9 +66,9 @@ color world::ray_color(const ray& r, const int depth) const {
 	const vec3 normal = closest_obj->get_normal(r.point(record.t));
 	const point3 hit_point = r.point(record.t);
 
-	color direct_light = world::BLACK;
-	const ray shadow_ray(hit_point, sun_direction);
-	if (!find_any_hit(shadow_ray)) direct_light = obj_color * sun_color * std::max(0.0, dot(normal, sun_direction));
+	//color direct_light = world::BLACK;
+	//const ray shadow_ray(hit_point, sun_direction);
+	//if (!find_any_hit(shadow_ray)) direct_light = obj_color * sun_color * std::max(0.0, dot(normal, sun_direction));
 
 	vec3 diffuse_direction = normal + utility::random_unit_vector();
 	if (diffuse_direction.near_zero()) diffuse_direction = normal;
@@ -78,16 +78,36 @@ color world::ray_color(const ray& r, const int depth) const {
 	const vec3 metallic_direction = reflect_direction + roughness * utility::random_unit_vector();
 
 	vec3 final_scatter_direction;
-	if (utility::random_double64() < metallic) {
+	bool is_metallic = (utility::random_double64() < metallic);
+
+	if (is_metallic) {
 		final_scatter_direction = metallic_direction;
 
 		// prevent scattering into the object
-		if (dot(final_scatter_direction, normal) <= 0.0) return direct_light;
+		if (dot(final_scatter_direction, normal) <= 0.0) return world::BLACK;
 	}
 	else final_scatter_direction = diffuse_direction;
-	
+
 	ray scattered(hit_point, final_scatter_direction);
-	return direct_light + obj_color * ray_color(scattered, depth + 1);
+
+	if (is_metallic) return obj_color * ray_color(scattered, depth + 1);
+	else {
+		// apply lambertian shading for proper shadows
+		double cos_theta = std::max(0.0, dot(normal, unit_vector(final_scatter_direction)));
+		return obj_color * cos_theta * ray_color(scattered, depth + 1);
+	}
+
+	//vec3 final_scatter_direction;
+	//if (utility::random_double64() < metallic) {
+	//	final_scatter_direction = metallic_direction;
+
+	//	// prevent scattering into the object
+	//	//if (dot(final_scatter_direction, normal) <= 0.0) return direct_light;
+	//}
+	//else final_scatter_direction = diffuse_direction;
+	//
+	//ray scattered(hit_point, final_scatter_direction);
+	//return obj_color * ray_color(scattered, depth + 1);
 }
 
 const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool output) {

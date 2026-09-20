@@ -64,13 +64,13 @@ int main()
 	#ifndef _MSC_VER
 		skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr", 8);
 	#else
-		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr");
+		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 4);
 	#endif
 
 	world scene(&cam, &sky);
 
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
-		std::make_unique<material>(color(0.67, 0.5, 1), 0.8, 0.3674)));
+		std::make_unique<material>(color(0.67, 0.5, 1))));
 
 	scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
 		std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));

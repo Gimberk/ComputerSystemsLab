@@ -21,7 +21,7 @@ public:
     skybox& operator=(const skybox&) = delete;
 
     // 2. Enable moving (transfers ownership of the pointer)
-    skybox(skybox&& other) noexcept : data(other.data) {
+    skybox(skybox&& other) noexcept : data(other.data), intensity_multiplier(other.intensity_multiplier) {
         other.data = nullptr; // Clear the old pointer so it doesn't free it
     }
 
