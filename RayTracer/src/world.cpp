@@ -3,6 +3,7 @@
 #include "hittables/skybox.h"
 
 #include <chrono>
+#include <algorithm>
 #include <future>
 
 const color world::BLACK(0, 0, 0);
@@ -54,9 +55,11 @@ color world::ray_color(const ray& r, const int depth) const {
 		// Legacy skybox gradient; now used when no valid skybox is provided
 		// if no solution:
 		// we blend from baby-blue to white
-		vec3 unit_direction = unit_vector(r.direction());
-		auto x = 0.5 * (unit_direction.y + 1.0);
-		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
+		//vec3 unit_direction = unit_vector(r.direction());
+		//auto x = 0.5 * (unit_direction.y + 1.0);
+		//return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
+
+		return color(1, 1, 1);
 	}
 
 	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
@@ -134,12 +137,14 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	cam->increment_accumulation_count(); // only call once the frame is finished, not every time you update a pixel dumbass. god damn.
 										 // well that's rather mean
 
+	/*
 	if (!output){
 		auto end = std::chrono::high_resolution_clock::now();
 		time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
 		return nullptr;
 	}
+	*/
 
 	const std::vector<color>& accumulation = cam->get_final_accumulation();
 	for (int y = 0; y < cam->image_height; y++) {
@@ -147,6 +152,12 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 			const int index = y * cam->image_width + x;
 			//const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, 
 			const color averaged = accumulation[index] / cam->get_accumulation_count();
+
+			// apply gamma correction
+			const float inv_gamma = 1.0 / 2.2;
+			float corrected_x = std::clamp(std::pow(static_cast<float>(averaged.x), inv_gamma), 0.0f, 1.0f);
+			float corrected_y = std::clamp(std::pow(static_cast<float>(averaged.y), inv_gamma), 0.0f, 1.0f);
+			float corrected_z = std::clamp(std::pow(static_cast<float>(averaged.z), inv_gamma), 0.0f, 1.0f);
 
 			framebuffer[3 * index] = static_cast<unsigned char>(255.999 * averaged.x);
 			framebuffer[3 * index + 1] = static_cast<unsigned char>(255.999 * averaged.y);
