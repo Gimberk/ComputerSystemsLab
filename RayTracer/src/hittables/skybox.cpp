@@ -54,9 +54,6 @@ color skybox::get_texture_sky_color(const ray& r) const {
     const int index = 3 * (y * width + x);
 
     color out_color(data[index], data[index + 1], data[index + 2]);
-    out_color *= intensity_multiplier;
-
-    out_color = aces_filmic(out_color);
 
     return out_color;
 }

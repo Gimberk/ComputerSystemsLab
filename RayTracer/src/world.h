@@ -31,11 +31,11 @@ public:
 
 	world(camera* cam) 
 		: sun_color(color(254.0 / 255.0, 211.0 / 255.0, 60.0 / 255.0)), sun_direction(vec3(0.707, 0.707, 0)), 
-		max_ray_depth(1), cam(cam), sky(nullptr), framebuffer(cam->image_width * cam->image_height * 3) {}
+		max_ray_depth(8), cam(cam), sky(nullptr), framebuffer(cam->image_width * cam->image_height * 3) {}
 
 	world(camera* cam, skybox* sky) 
 		: sun_color(color(254.0 / 255.0, 211.0 / 255.0, 60.0 / 255.0)), sun_direction(vec3(0.707, 0.707, 0)), 
-		max_ray_depth(1), cam(cam), sky(sky), framebuffer(cam->image_width * cam->image_height * 3) {}
+		max_ray_depth(8), cam(cam), sky(sky), framebuffer(cam->image_width * cam->image_height * 3) {}
 
 	world(camera* cam, skybox* sky, int max_ray_depth, color sun_color, vec3 sun_direction)
 		: sun_color(sun_color), sun_direction(sun_direction), max_ray_depth(max_ray_depth), cam(cam), sky(sky),

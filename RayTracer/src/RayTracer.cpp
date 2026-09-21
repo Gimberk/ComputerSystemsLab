@@ -70,13 +70,13 @@ int main()
 	world scene(&cam);
 
 	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
-		std::make_unique<material>(color(0.5,1,0.8))));
+		std::make_unique<material>(color(1,1,1))));
 
 	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
 	//	std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));
 
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
-		std::make_unique<material>(color(0.5, 0.5, 0.5))));
+		std::make_unique<material>(color(1,1,1))));
 	
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <numbers>
 #include <cmath>
+#include <random>
 
 namespace utility {
 	constexpr double PI = 3.14159265358979323846;
@@ -41,7 +42,10 @@ namespace utility {
 		const double phi = acos(2 * v - 1);
 
 		// convert to cartesian coords
-		const double x = sin(phi) * cos(theta), y = sin(phi) * sin(theta), z = sqrt(u);
+		double sphi = sin(phi), cost = cos(theta), sint = sin(theta);
+
+		// no need to multiply by rho because we don't really care how far out it is.
+		const double x = sphi * cost, y = sphi * sint, z = 2 * v - 1;
 		
 		return vec3(x, y, z);
 	}

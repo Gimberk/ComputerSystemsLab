@@ -77,12 +77,13 @@ color world::ray_color(const ray& r, const int depth) const {
 	if (diffuse_direction.near_zero()) diffuse_direction = normal;
 
 	// reflect formula: v - 2(v*n) * n
-	const vec3 reflect_direction = r.direction() - 2.0 * dot(r.direction(), normal) * normal;
-	const vec3 metallic_direction = reflect_direction + roughness * utility::random_unit_vector();
+	//const vec3 reflect_direction = r.direction() - 2.0 * dot(r.direction(), normal) * normal;
+	//const vec3 metallic_direction = reflect_direction + roughness * utility::random_unit_vector();
 
-	vec3 final_scatter_direction;
-	bool is_metallic = (utility::random_double64() < metallic);
+	vec3 final_scatter_direction = diffuse_direction;
+	bool is_metallic = false; // (utility::random_double64() < metallic);
 
+	/*
 	if (is_metallic) {
 		final_scatter_direction = metallic_direction;
 
@@ -90,15 +91,16 @@ color world::ray_color(const ray& r, const int depth) const {
 		if (dot(final_scatter_direction, normal) <= 0.0) return world::BLACK;
 	}
 	else final_scatter_direction = diffuse_direction;
+	*/
 
-	ray scattered(hit_point, final_scatter_direction);
+	constexpr double epsilon = 0.00001;
+	const point3 origin = hit_point + normal * epsilon;
+
+	ray scattered(origin, final_scatter_direction);
+
 
 	if (is_metallic) return obj_color * ray_color(scattered, depth + 1);
-	else {
-		// apply lambertian shading for proper shadows
-		double cos_theta = std::max(0.0, dot(normal, unit_vector(final_scatter_direction)));
-		return obj_color * cos_theta * ray_color(scattered, depth + 1);
-	}
+	else return obj_color * ray_color(scattered, depth + 1);
 
 	//vec3 final_scatter_direction;
 	//if (utility::random_double64() < metallic) {
@@ -151,7 +153,10 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 		for (int x = 0; x < cam->image_width; x++) {
 			const int index = y * cam->image_width + x;
 			//const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, 
-			const color averaged = accumulation[index] / cam->get_accumulation_count();
+			color averaged = accumulation[index] / cam->get_accumulation_count();
+
+			// should ACES tone mapping be applied to every pixel, or just the specific skybox ones?
+			if (sky != nullptr && sky->skybox_is_valid()) averaged = aces_filmic(averaged);
 
 			// apply gamma correction
 			const float inv_gamma = 1.0 / 2.2;

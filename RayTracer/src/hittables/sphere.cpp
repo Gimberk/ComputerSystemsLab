@@ -5,13 +5,22 @@ const hit_record sphere::intersect(const ray& r) const {
 	const auto a = r.direction().length_squared();
 	const auto h = dot(r.direction(), C - O);
 	const auto c = (C - O).length_squared() - radius * radius;
+	
 	const auto discr = h * h - a * c;
 
 	if (discr < 0) return hit_record();
 
-	const double t = (h - sqrt(discr)) / a;
+	const double sqrt_discr = std::sqrt(discr);
 
-	return hit_record(t, this);
+	double t = (h - sqrt_discr) / a;
+
+	if (t > 0.001) return hit_record(t, this);
+
+	t = (h + sqrt_discr) / a;
+
+	if (t > 0.001) return hit_record(t, this);
+
+	return hit_record();
 }
 
 const vec3 sphere::get_normal(const point3& hit_point) const {
