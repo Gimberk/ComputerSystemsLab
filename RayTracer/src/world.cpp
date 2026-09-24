@@ -165,7 +165,7 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
-	double time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
+	time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
 	//std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
 	return &framebuffer;

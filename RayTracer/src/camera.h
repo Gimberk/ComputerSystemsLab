@@ -15,7 +15,7 @@ class camera {
 public:
 	// a bunch of lame camera math stuff
 	const double aspect_ratio = 16.0 / 9.0;
-	const int image_width = 1080; // 600 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
+	const int image_width = 600; // 600 / height = 1.77; height = 400 / 1.77; height = image_width / aspect_ratio 
 
 	double focal_length = 1;
 	point3 center;
@@ -25,7 +25,7 @@ public:
 	unsigned int max_threads = std::max(std::thread::hardware_concurrency(), (unsigned int)5);
 	std::vector<std::thread> threads;
 
-	double pitch = 0, yaw = 180;
+	double pitch = 0, yaw = 0;
 
 	double speed = 0.1;
 
