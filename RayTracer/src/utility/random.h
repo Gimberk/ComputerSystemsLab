@@ -35,18 +35,13 @@ namespace utility {
 	}
 
 	inline vec3 random_unit_vector() {
-		const float u = random_float32(), v = random_float32();
+		const double u = random_double64(), v = random_double64();
 
 		// generate a random spherical coordinate
-		const double theta = 2 * PI * u;
-		const double phi = acos(2 * v - 1);
+		const double z = 1.0 - 2.0 * u;
+		const double r = std::sqrt(std::max(0.0, 1.0 - z * z));
+		const double theta = 2.0 * PI * v;
 
-		// convert to cartesian coords
-		double sphi = sin(phi), cost = cos(theta), sint = sin(theta);
-
-		// no need to multiply by rho because we don't really care how far out it is.
-		const double x = sphi * cost, y = sphi * sint, z = 2 * v - 1;
-		
-		return vec3(x, y, z);
+		return vec3(r * std::cos(theta), r * std::sin(theta), z);
 	}
 }

@@ -55,9 +55,11 @@ color world::ray_color(const ray& r, const int depth) const {
 		// Legacy skybox gradient; now used when no valid skybox is provided
 		// if no solution:
 		// we blend from baby-blue to white
-		vec3 unit_direction = unit_vector(r.direction());
+		/*vec3 unit_direction = unit_vector(r.direction());
 		auto x = 0.5 * (unit_direction.y + 1.0);
-		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
+		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);*/
+
+		return color(0, 0, 0);
 	}
 
 	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
