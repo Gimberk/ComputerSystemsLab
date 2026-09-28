@@ -55,11 +55,9 @@ color world::ray_color(const ray& r, const int depth) const {
 		// Legacy skybox gradient; now used when no valid skybox is provided
 		// if no solution:
 		// we blend from baby-blue to white
-		//vec3 unit_direction = unit_vector(r.direction());
-		//auto x = 0.5 * (unit_direction.y + 1.0);
-		//return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
-
-		return color(1, 1, 1);
+		vec3 unit_direction = unit_vector(r.direction());
+		auto x = 0.5 * (unit_direction.y + 1.0);
+		return (1.0 - x) * color(1, 1, 1) + x * color(0.5, 0.7, 1.0);
 	}
 
 	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
@@ -69,9 +67,11 @@ color world::ray_color(const ray& r, const int depth) const {
 	const vec3 normal = closest_obj->get_normal(r.point(record.t));
 	const point3 hit_point = r.point(record.t);
 
-	//color direct_light = world::BLACK;
-	//const ray shadow_ray(origin, sun_direction);
-	//if (!find_any_hit(shadow_ray)) direct_light = obj_color * sun_color * std::max(0.0, dot(normal, sun_direction));
+	// handle object emissivity. If at all emissive, terminate the ray, for now; 
+	// it is more realistic if it keeps bouncing if only partially emissive.
+	const color emission = closest_obj->has_material() ? 
+		closest_obj->mat->emission_color*closest_obj->mat->emission_intensity : color();
+	if (!emission.near_zero()) return emission;
 
 	vec3 diffuse_direction = normal + utility::random_unit_vector();
 	if (diffuse_direction.near_zero()) diffuse_direction = normal;
@@ -95,18 +95,6 @@ color world::ray_color(const ray& r, const int depth) const {
 
 	ray scattered(origin, final_scatter_direction);
 	return obj_color * ray_color(scattered, depth + 1);
-
-	//vec3 final_scatter_direction;
-	//if (utility::random_double64() < metallic) {
-	//	final_scatter_direction = metallic_direction;
-
-	//	// prevent scattering into the object
-	//	//if (dot(final_scatter_direction, normal) <= 0.0) return direct_light;
-	//}
-	//else final_scatter_direction = diffuse_direction;
-	//
-	//ray scattered(hit_point, final_scatter_direction);
-	//return obj_color * ray_color(scattered, depth + 1);
 }
 
 const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool output) {
