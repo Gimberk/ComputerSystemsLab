@@ -1,5 +1,4 @@
 #include <memory>
-#include <array>
 
 #ifdef _MSC_VER
 #include <glad/glad.h>
@@ -14,7 +13,6 @@
 #include "utility/thread_pool.h"
 
 #include "hittables/sphere.h"
-#include "hittables/triangle.h"
 
 #include <filesystem>
 
@@ -168,7 +166,7 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 1000;
+	const int accumulation_count = 100;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){

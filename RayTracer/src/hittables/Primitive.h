@@ -24,6 +24,8 @@ public:
 	const virtual hit_record intersect(const ray& r) const = 0;
 	
 	const virtual vec3 get_normal(const point3& hit_point) const = 0;
+	
+	const virtual point3 sample_random_point() const;
 
 	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
 

@@ -22,5 +22,10 @@ public:
 
 	const hit_record intersect(const ray& r) const override;
 
+	const point3 sample_random_point() const override {
+		// nothing going on here, yet.
+		return point3();
+	}
+
 	const vec3 get_normal(const point3& hit_point) const override;
 };

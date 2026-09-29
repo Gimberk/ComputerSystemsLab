@@ -24,5 +24,7 @@ public:
 
 	const hit_record intersect(const ray& r) const override;
 
+	const point3 sample_random_point() const override;
+
 	const vec3 get_normal(const point3& hit_point) const override;
 };

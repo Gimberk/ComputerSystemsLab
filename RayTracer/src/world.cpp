@@ -1,6 +1,7 @@
 #include "world.h"
 
 #include "hittables/skybox.h"
+#include "utility/random.h"
 
 #include <chrono>
 #include <algorithm>
@@ -62,41 +63,43 @@ color world::ray_color(const ray& r, const int depth) const {
 		return color(0, 0, 0);
 	}
 
+	// get all data from object intersection
 	const color obj_color = closest_obj->has_material() ? closest_obj->mat->albedo : get_null_mat();
 	const double metallic = closest_obj->has_material() ? closest_obj->mat->metallic : 0.0;
 	const double roughness = closest_obj->has_material() ? closest_obj->mat->roughness : 0.0;
+	const color emission = closest_obj->has_material() ? 
+		closest_obj->mat->emission_color*closest_obj->mat->emission_intensity : color();
+
+	if (!emission.near_zero()) return emission;
 	
+	// hit point specific data
 	const vec3 normal = closest_obj->get_normal(r.point(record.t));
 	const point3 hit_point = r.point(record.t);
 
-	// handle object emissivity. If at all emissive, terminate the ray, for now; 
-	// it is more realistic if it keeps bouncing if only partially emissive.
-	const color emission = closest_obj->has_material() ? 
-		closest_obj->mat->emission_color*closest_obj->mat->emission_intensity : color();
-	if (!emission.near_zero()) return emission;
+	// this is the NEE implementation. For now, it's assumed the only light is the one emissive sphere.
+	const point3 y = objects[0]->sample_random_point(); // sample a point on the light
+	const vec3 to_light = y - hit_point;
 
-	vec3 diffuse_direction = normal + utility::random_unit_vector();
-	if (diffuse_direction.near_zero()) diffuse_direction = normal;
+	const double dist = to_light.length();
 
-	// reflect formula: v - 2(v*n) * n
-	const vec3 reflect_direction = r.direction() - 2.0 * dot(r.direction(), normal) * normal;
-	const vec3 metallic_direction = reflect_direction + roughness * utility::random_unit_vector();
+	const vec3 light_direction = to_light / dist;
 
-	vec3 final_scatter_direction = diffuse_direction;
-	bool is_metallic = utility::random_double64() < metallic;
-
-	if (is_metallic) {
-		final_scatter_direction = metallic_direction;
-
-		// prevent scattering into the object
-		if (dot(final_scatter_direction, normal) <= 0.0) return world::BLACK;
-	}
-
+	// offset origin to prevent self intersection
 	constexpr double epsilon = 0.00001;
-	const point3 origin = hit_point + normal * epsilon;
+	const ray scattered(hit_point + normal * epsilon, utility::random_cosine_direction(normal));
 
-	ray scattered(origin, final_scatter_direction);
 	return obj_color * ray_color(scattered, depth + 1);
+
+	/*
+	this produces weird coloring on my sphere. it's strange
+	constexpr double epsilon = 0.00001;
+	const ray scattered(hit_point + normal * epsilon, wi);
+
+	const color incoming_light = ray_color(scattered, depth + 1);
+	const color indirect_light = obj_color * incoming_light;
+
+	return emission + indirect_light;
+	*/
 }
 
 const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool output) {
