@@ -62,7 +62,7 @@ color world::ray_color(const ray& r, const int depth) const {
 	hit_record record = intersect_world(r);
 
 	if (!record.object)
-		return color(0, 0, 0);
+		return world::BLACK;
 
 	const primitive* obj = record.object;
 
@@ -74,9 +74,8 @@ color world::ray_color(const ray& r, const int depth) const {
 
 	const color albedo = obj->mat->albedo;
 
-	// if there are any occluders, we ignore any direct light
-	color direct = world::BLACK;
 	// this is the NEE implementation. For now, it's assumed the only light is the one emissive sphere.
+	// if there are any occluders, we ignore any direct light
 	const point3 y = objects[0]->sample_random_point(); // sample a point on the light
 	//const point3 y = point3(0,0,-1) - vec3(0, 0.5, 0);
 	const vec3 to_light = y - hit_point;
@@ -84,9 +83,9 @@ color world::ray_color(const ray& r, const int depth) const {
 	const double dist_squared = dist * dist;
 	const vec3 light_direction = to_light / dist;
 
-	const vec3 synthetic = vec3(0, 1, 0);
 	const double local_surface_cosine = std::max(0.0, dot(normal, light_direction)); // the surface cosine
 
+	color direct = world::BLACK;
 	if (local_surface_cosine > 0.0) {
 		// light's cosine
 		const vec3 light_normal = objects[0]->get_normal(y);
@@ -113,17 +112,17 @@ color world::ray_color(const ray& r, const int depth) const {
 				//// finally, bring it all together for calculating the direct light contribution
 				//direct = Le * fr * local_surface_cosine / local_light_pdf;
 
-				direct = color(0.5, 0.5, 0.5);
+				direct = albedo * 0.5;
 			}
 		}
 	}
 
 	// apply the direct lighting from NEE
-	//const vec3 wi = utility::random_cosine_direction(normal);
-	//const ray scattered(hit_point + normal * epsilon, wi);
+	const vec3 wi = utility::random_cosine_direction(normal);
+	const ray scattered(hit_point + normal * epsilon, wi);
 
-	//const color indirect = albedo * ray_color(scattered, depth + 1);
-	return direct;
+	const color indirect = albedo * ray_color(scattered, depth + 1);
+	return direct + indirect;
 }
 
 const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool output) {
@@ -134,7 +133,6 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	for (uint64_t i = 0; i < (frame_burn % 100); ++i) {
 		utility::random_double64();
 	}
-
 
 	// for multithreading
 	std::vector<std::future<void>> frame_futures;
@@ -172,8 +170,8 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 			//const int reverse_index = (cam->image_height - y - 1) * cam->image_width + x, 
 			color averaged = accumulation[index] / cam->get_accumulation_count();
 
-			// should ACES tone mapping be applied to every pixel, or just the specific skybox ones?
-			if (sky != nullptr && sky->skybox_is_valid()) averaged = aces_filmic(averaged);
+			// tone-map the pixels so they are all in the same format a monitor expects them to be.
+			averaged = aces_filmic(averaged);
 
 			// apply gamma correction
 			const float inv_gamma = 1.0 / 2.2;

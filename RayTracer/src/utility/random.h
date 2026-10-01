@@ -2,6 +2,8 @@
 
 #include "vec3.h"
 
+
+#include <atomic>
 #include <cstdint>
 #include <numbers>
 #include <cmath>
