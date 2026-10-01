@@ -10,6 +10,22 @@
 namespace utility {
 	constexpr double PI = 3.14159265358979323846;
 
+	// used to prevent all threads from having the same starting seed.
+	inline uint64_t make_seed() {
+		static std::atomic<uint64_t> seed_counter(1);
+
+		uint64_t seed = seed_counter.fetch_add(1);
+
+		// mix seeds
+		seed ^= seed >> 30;
+		seed *= 0xbf58476d1ce5eb9ULL;
+		seed ^= seed >> 27;
+		seed *= 0x94d049bb133111ebULL;
+		seed ^= seed >> 31;
+
+		return seed;
+	}
+
 	inline float random_float32() {
 		thread_local uint32_t state = 3452529; // seed
 
@@ -23,7 +39,7 @@ namespace utility {
 	}
 
 	inline double random_double64() {
-		thread_local uint64_t state = 345252564789; // seed
+		thread_local uint64_t state = make_seed(); // seed
 
 		// some weird xorshift algorithm for fast randomness
 		// https://en.wikipedia.org/wiki/Xorshift
@@ -31,7 +47,9 @@ namespace utility {
 		state ^= state >> 7;
 		state ^= state << 17;
 
-		return (state >> 11) * (1.0 / 9007199254740992.0); // 1.0 / 2^53 (max double val)
+		uint64_t scrambled = state * 0x2545F4914F6CDD1DULL;
+
+		return (scrambled >> 11) * (1.0 / 9007199254740992.0); // 1.0 / 2^53 (max double val)
 	}
 
 	inline vec3 random_unit_vector() {
@@ -63,6 +81,6 @@ namespace utility {
 		const vec3 u = unit_vector(cross(a, w));
 		const vec3 v = cross(u ,w);
 
-		return u * x + v * y + w * z;
+		return unit_vector(u * x + v * y + w * z);
 	}
 }

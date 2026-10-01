@@ -23,7 +23,7 @@ public:
 	const int rays_per_pixel = 1;
 
 	unsigned int max_threads = std::max(std::thread::hardware_concurrency(), (unsigned int)5);
-	std::vector<std::thread> threads;
+	//unsigned int max_threads = (unsigned int)1;
 
 	double pitch = 0, yaw = 0;
 

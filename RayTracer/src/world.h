@@ -64,5 +64,5 @@ private:
 	camera* cam;
 	skybox* sky;
 
-	const bool find_any_hit(const ray& r) const;
+	const bool find_any_hit(const ray& r, double max_t, primitive* ignore) const;
 };

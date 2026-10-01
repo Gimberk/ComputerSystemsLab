@@ -25,7 +25,7 @@ public:
 	
 	const virtual vec3 get_normal(const point3& hit_point) const = 0;
 	
-	const virtual point3 sample_random_point() const;
+	const virtual point3 sample_random_point() const = 0;
 
 	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
 
