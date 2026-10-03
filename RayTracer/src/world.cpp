@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <future>
 
+#include <typeinfo>
+
 const color world::BLACK(0, 0, 0);
 const color world::WHITE(1, 1, 1);
 const color world::RED(1, 0, 0);
@@ -77,7 +79,6 @@ color world::ray_color(const ray& r, const int depth) const {
 	// this is the NEE implementation. For now, it's assumed the only light is the one emissive sphere.
 	// if there are any occluders, we ignore any direct light
 	const point3 y = objects[0]->sample_random_point(); // sample a point on the light
-	//const point3 y = point3(0,0,-1) - vec3(0, 0.5, 0);
 	const vec3 to_light = y - hit_point;
 	const double dist = to_light.length();
 	const double dist_squared = dist * dist;
@@ -93,26 +94,26 @@ color world::ray_color(const ray& r, const int depth) const {
 
 		if (local_light_cosine > 0.0) {
 			const ray shadow_ray(hit_point + normal * 1e-4, -light_direction);
-			const bool blocked = find_any_hit(shadow_ray, dist * 1.01, const_cast<primitive*>(objects[0].get()));
+
+			primitive* ignore = const_cast<primitive*>(objects[0].get());
+			const bool blocked = find_any_hit(shadow_ray, dist * 1.01, ignore);
 
 			if (!blocked) {
-				//// perform the rest of NEE now that there is a direct path
-				//const color Le = objects[0]->mat->emission_color * objects[0]->mat->emission_intensity;
+				// perform the rest of NEE now that there is a direct path
+				const color Le = objects[0]->mat->emission_color * objects[0]->mat->emission_intensity;
 
-				//const color fr = albedo / utility::PI; // calculate the lambertian surface BRDF
+				const color fr = albedo / utility::PI; // calculate the lambertian surface BRDF
 
-				//// L bozo. imagine using auto because you don't know the value of the formula you're using (light PDF)
-				//const double area = 4.0 * utility::PI * 0.5 * 0.5;
-				//const double pdf_area = 1.0 / area;
+				// L bozo. imagine using auto because you don't know the value of the formula you're using (light PDF)
+				const double area = 4.0 * utility::PI * 0.5 * 0.5;
+				const double pdf_area = 1.0 / area;
 
-				//// solid-agnle PDF
-				//const double local_light_pdf = pdf_area * dist_squared / local_light_cosine;
-				////const double light_pdf = 1.0;
+				// solid-agnle PDF
+				const double local_light_pdf = pdf_area * dist_squared / local_light_cosine;
+				//const double light_pdf = 1.0;
 
-				//// finally, bring it all together for calculating the direct light contribution
-				//direct = Le * fr * local_surface_cosine / local_light_pdf;
-
-				direct = albedo * 0.5;
+				// finally, bring it all together for calculating the direct light contribution
+				direct = Le * fr * local_surface_cosine / local_light_pdf;
 			}
 		}
 	}
@@ -179,9 +180,9 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 			float corrected_y = std::clamp(std::pow(static_cast<float>(averaged.y), inv_gamma), 0.0f, 1.0f);
 			float corrected_z = std::clamp(std::pow(static_cast<float>(averaged.z), inv_gamma), 0.0f, 1.0f);
 
-			framebuffer[3 * index] = static_cast<unsigned char>(255.999 * averaged.x);
-			framebuffer[3 * index + 1] = static_cast<unsigned char>(255.999 * averaged.y);
-			framebuffer[3 * index + 2] = static_cast<unsigned char>(255.999 * averaged.z);
+			framebuffer[3 * index] = static_cast<unsigned char>(255.999 * corrected_x);
+			framebuffer[3 * index + 1] = static_cast<unsigned char>(255.999 * corrected_y);
+			framebuffer[3 * index + 2] = static_cast<unsigned char>(255.999 * corrected_z);
 		}
 	}
 

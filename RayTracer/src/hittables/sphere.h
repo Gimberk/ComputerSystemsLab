@@ -17,8 +17,6 @@ public:
 	sphere(sphere&&) noexcept = default;
 	sphere& operator=(sphere&&) noexcept = default;
 
-	sphere(const point3& center, const double radius) : primitive(primitive_type::sphere), center(center), radius(radius) {}
-
 	sphere(const point3& center, const double radius, std::unique_ptr<material> mat) 
 		: primitive(primitive_type::sphere, std::move(mat)), center(center), radius(radius) {}
 

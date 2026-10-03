@@ -3,7 +3,7 @@
 // we'll use the Moller-Trumbore algorithm--it's apparently very fast:
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
 const hit_record triangle::intersect(const ray& r) const {
-	const double epsilon = 0.0000001;
+	constexpr double epsilon = 1e-7;
 
 	const vec3 edge1 = points[1] - points[0], edge2 = points[2] - points[0];
 
@@ -25,8 +25,7 @@ const hit_record triangle::intersect(const ray& r) const {
 
 	const double t = f * dot(edge2, q);
 
-	if (t > epsilon) return hit_record(t, this);
-	else return hit_record(); // intersection is behind camera
+	return t > epsilon ? hit_record(t, this) : hit_record();
 }
 
 const vec3 triangle::get_normal(const point3& hit_point) const {

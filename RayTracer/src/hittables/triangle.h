@@ -15,8 +15,6 @@ public:
 	triangle(triangle&&) noexcept = default;
 	triangle& operator=(triangle&&) noexcept = default;
 
-	triangle(const std::array<vec3, 3>& points) : primitive(primitive_type::triangle), points(points) {}
-
 	triangle(const std::array<vec3, 3>& points, std::unique_ptr<material> mat)
 		: primitive(primitive_type::sphere, std::move(mat)), points(points) {}
 

@@ -13,6 +13,7 @@
 #include "utility/thread_pool.h"
 
 #include "hittables/sphere.h"
+#include "hittables/plane.h"
 
 #include <filesystem>
 
@@ -61,7 +62,7 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 
 int main()
 {
-	thread_pool pool(cam.max_threads);
+	thread_pool pool(1);
 
 	#ifndef _MSC_VER
 		skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr", 3);
@@ -71,14 +72,16 @@ int main()
 
 	world scene(&cam);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0, -1), 0.5, 
+	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, -1), 0.5, 
 		std::make_unique<material>(color(0.67, 0.5, 1), color(1,1,1), 1)));
 
-	/*scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
-		std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));*/
+	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
+	//	std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));
 
-	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100, 
+	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100,
 		std::make_unique<material>(color(0.5,0.5,0.5))));
+
+	scene.create_object(std::make_shared<plane>(point3(1, 0, 0), vec3(-1, 0, 0), 4, 3, std::make_unique<material>(world::GREEN)));
 	
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER

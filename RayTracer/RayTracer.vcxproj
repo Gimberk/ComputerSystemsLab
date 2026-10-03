@@ -153,6 +153,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hittables\plane.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\hittables\skybox.cpp" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\hittables\plane.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\ext\stb_image.h" />
     <ClInclude Include="src\ext\stb_image_write.h" />
