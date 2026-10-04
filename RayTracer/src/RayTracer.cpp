@@ -67,22 +67,22 @@ int main()
 	#ifndef _MSC_VER
 		skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr", 3);
 	#else
-		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 3);
+		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 2);
 	#endif
 
-	world scene(&cam);
+	world scene(&cam, &sky);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, -1), 0.5, 
+	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, -0.), 0.5, 
 		std::make_unique<material>(color(0.67, 0.5, 1), color(1,1,1), 1)));
 
 	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
 	//	std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));
 
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100,
-		std::make_unique<material>(color(0.5,0.5,0.5))));
+		std::make_unique<material>(color(0.78, 0.34, 1))));
 
 	scene.create_object(std::make_shared<plane>(point3(1, 0, 0), vec3(-1, 0, 0), 4, 3, std::make_unique<material>(world::GREEN)));
-	
+
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
 	if (!glfwInit()) {

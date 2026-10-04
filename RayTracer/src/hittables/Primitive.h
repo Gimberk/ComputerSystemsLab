@@ -6,7 +6,7 @@
 #include "material.h"
 
 enum class primitive_type {
-	sphere, triangle, plane
+	sphere, triangle, plane, box
 };
 
 class primitive {
@@ -16,6 +16,8 @@ public:
 
 	primitive(primitive&&) noexcept = default;
 	primitive& operator=(primitive&&) noexcept = default;
+
+	primitive(primitive_type type) : type(type){}
 
 	primitive(primitive_type type, std::unique_ptr<material> mat) : type(type), mat(std::move(mat)) {}
 
@@ -27,4 +29,6 @@ public:
 	const virtual point3 sample_random_point() const = 0;
 
 	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
+
+	bool has_material() { return bool(mat); }
 };
