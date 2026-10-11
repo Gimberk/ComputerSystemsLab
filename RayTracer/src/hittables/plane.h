@@ -42,6 +42,8 @@ public:
 
 	const point3 sample_random_point() const override;
 
+	const double get_surface_area() const override { return width * height; }
+
 	const vec3 get_normal(const point3& hit_point) const override { return normal; }
 
 private:

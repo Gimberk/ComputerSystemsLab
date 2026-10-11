@@ -1,6 +1,8 @@
 #include "sphere.h"
 
-#include "../utility/random.h"
+#include "../utility/math.h"
+
+const double sphere::get_surface_area() const { return 4 * utility::PI * radius * radius; }
 
 const hit_record sphere::intersect(const ray& r) const {
 	const point3 O = r.origin(), C = center;

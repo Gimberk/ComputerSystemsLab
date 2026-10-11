@@ -28,6 +28,11 @@ const hit_record triangle::intersect(const ray& r) const {
 	return t > epsilon ? hit_record(t, this) : hit_record();
 }
 
+const double triangle::get_surface_area() const {
+	const vec3 edge1 = points[0] - points[1], edge2 = points[2] - points[1];
+	return 0.5 * cross(edge1, edge2).length();
+}
+
 const vec3 triangle::get_normal(const point3& hit_point) const {
 	const vec3 edge1 = points[1] - points[0], edge2 = points[2] - points[0];
 	return cross(edge1, edge2);

@@ -45,9 +45,6 @@
     <ClCompile Include="src\hittables\plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hittables\box.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\utility\vec3.h">
@@ -104,7 +101,7 @@
     <ClInclude Include="src\hittables\plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hittables\box.h">
+    <ClInclude Include="src\utility\math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

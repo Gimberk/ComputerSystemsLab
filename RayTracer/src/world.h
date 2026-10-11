@@ -14,8 +14,6 @@
 
 #include "utility/thread_pool.h"
 
-#include "utility/random.h"
-
 class world {
 public:
 	static const color BLACK;
@@ -47,7 +45,7 @@ public:
 
 	const hit_record intersect_world(const ray& r) const;
 
-	color ray_color(const ray&, const int = 0) const;
+	color ray_color(const ray&, const int = 0, const double = 0.0, const point3& = {}, const bool = false) const;
 
 	const std::vector<unsigned char>* generate_image(thread_pool* pool, bool output = true);
 
@@ -59,10 +57,18 @@ private:
 	double time_for_last_frame = 0;	
 
 	std::vector<std::shared_ptr<primitive>> objects;
+	std::vector<std::shared_ptr<primitive>> emissive_objects;
+
 	std::vector<unsigned char> framebuffer;
 
 	camera* cam;
 	skybox* sky;
 
+private:
 	const bool find_any_hit(const ray& r, double max_t, primitive* ignore) const;
+
+	// the chance that this light was explicitly chosen
+	const double get_light_select_pdf() const { return 1.0 / emissive_objects.size(); }
+
+	const std::shared_ptr<primitive>& sample_random_light_source() const;
 };

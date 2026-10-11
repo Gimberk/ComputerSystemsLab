@@ -6,7 +6,7 @@
 #include "material.h"
 
 enum class primitive_type {
-	sphere, triangle, plane, box
+	sphere, triangle, plane
 };
 
 class primitive {
@@ -25,10 +25,12 @@ public:
 	const virtual hit_record intersect(const ray& r) const = 0;
 	
 	const virtual vec3 get_normal(const point3& hit_point) const = 0;
+
+	const virtual double get_surface_area() const = 0;
 	
 	const virtual point3 sample_random_point() const = 0;
 
 	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
 
-	bool has_material() { return bool(mat); }
+	const bool has_material() const { return bool(mat); }
 };
