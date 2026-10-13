@@ -6,7 +6,7 @@
 #include "material.h"
 
 enum class primitive_type {
-	sphere, triangle, plane
+	sphere, triangle, plane, mesh
 };
 
 class primitive {

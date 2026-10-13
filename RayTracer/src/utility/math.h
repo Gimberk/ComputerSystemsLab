@@ -1,7 +1,9 @@
 #pragma once
 
 #include "random.h"
-#include "vec3.h";
+#include "vec3.h"
+
+#include "../hittables/Primitive.h"
 
 namespace utility {
 	inline double light_pdf_for_hit(const double light_pdf_select, const point3& previous_point, 
