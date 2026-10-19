@@ -4,7 +4,7 @@
 
 const double sphere::get_surface_area() const { return 4 * utility::PI * radius * radius; }
 
-const hit_record sphere::intersect(const ray& r) const {
+const hit_record sphere::intersect(const ray& r) {
 	const point3 O = r.origin(), C = center;
 	const auto a = r.direction().length_squared();
 	const auto h = dot(r.direction(), C - O);

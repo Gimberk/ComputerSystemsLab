@@ -20,7 +20,7 @@ public:
 	sphere(const point3& center, const double radius, std::unique_ptr<material> mat) 
 		: primitive(primitive_type::sphere, std::move(mat)), center(center), radius(radius) {}
 
-	const hit_record intersect(const ray& r) const override;
+	const hit_record intersect(const ray& r) override;
 
 	const point3 sample_random_point() const override;
 

@@ -153,6 +153,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hittables\mesh.cpp" />
     <ClCompile Include="src\hittables\plane.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -160,6 +161,7 @@
     <ClCompile Include="src\RayTracer.cpp" />
     <ClCompile Include="src\hittables\sphere.cpp" />
     <ClCompile Include="src\utility\color.cpp" />
+    <ClCompile Include="src\utility\model_loader.cpp" />
     <ClCompile Include="src\world.cpp" />
     <ClCompile Include="src\utility\thread_pool.cpp" />
     <ClCompile Include="src\hittables\triangle.cpp" />
@@ -167,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\hittables\mesh.h" />
     <ClInclude Include="src\hittables\plane.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\ext\stb_image.h" />
@@ -178,6 +181,7 @@
     <ClInclude Include="src\hittables\Primitive.h" />
     <ClInclude Include="src\utility\hit_record.h" />
     <ClInclude Include="src\utility\math.h" />
+    <ClInclude Include="src\utility\model_loader.h" />
     <ClInclude Include="src\utility\random.h" />
     <ClInclude Include="src\utility\ray.h" />
     <ClInclude Include="src\utility\vec3.h" />

@@ -38,7 +38,7 @@ public:
 		v = v_axis * (height / 2.0);
 	}
 
-	const hit_record intersect(const ray& r) const override;
+	const hit_record intersect(const ray& r) override;
 
 	const point3 sample_random_point() const override;
 

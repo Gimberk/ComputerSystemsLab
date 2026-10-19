@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-
 #include <numbers>
+#include <functional>
 
 constexpr double PI = 3.14159265358979323846;
 
@@ -45,7 +45,7 @@ public:
 		return *this;
 	}
 
-	bool operator==(const vec3 v) const {
+	bool operator==(const vec3& v) const {
 		return x == v.x && y == v.y && z == v.z;
 	}
 
@@ -63,6 +63,20 @@ public:
 };
 
 using point3 = vec3;
+
+struct vec3_hash {
+	std::size_t operator()(const point3& other) const {
+		size_t h1 = std::hash<double>{}(other.x);
+		size_t h2 = std::hash<double>{}(other.y);
+		size_t h3 = std::hash<double>{}(other.z);
+
+		size_t seed = h1;
+		seed ^= h2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		seed ^= h3 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+
+		return seed;
+	}
+};
 
 // inline some functions as smaller functions can be copied a ton to save processing time
 
@@ -116,4 +130,10 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 
 inline vec3 unit_vector(const vec3& v) {
 	return v / v.length();
+}
+
+inline vec3 quantize(const point3& p, double epsilon = 1e-4) {
+	return vec3(std::round(p.x * (1.0 / epsilon)) * epsilon, 
+				std::round(p.y * (1.0 / epsilon)) * epsilon, 
+				std::round(p.z * (1.0 / epsilon)) * epsilon);
 }

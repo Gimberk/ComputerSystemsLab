@@ -2,7 +2,7 @@
 
 #include "../utility/random.h"
 
-const hit_record plane::intersect(const ray& r) const {
+const hit_record plane::intersect(const ray& r) {
 	constexpr double epsilon = 1e-7;
 
 	const double denominator = dot(normal, r.direction());
