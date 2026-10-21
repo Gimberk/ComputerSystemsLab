@@ -1,17 +1,19 @@
 #pragma once
 
-#include "../hittables/mesh.h"
-
 #include <string>
 #include <codecvt>
+#include <vector>
+#include <memory>
+
+#include "../hittables/triangle.h"
 
 class model_loader
 {
 public:
-	static mesh load_model(const char*);
-	static std::wstring exe_path();
-	static std::string to_string(const std::wstring&);
+	static std::vector<std::shared_ptr<triangle>> load_model(std::string);
+	static std::string get_model_path();
+	//static std::wstring exe_path();
+	//static std::string to_string(const std::wstring&);
 private:
-	static std::string get_model_path() { return "\\assets\\RAYTRACING_MODELS\\"; }
-	static void split(std::string line, std::vector<std::string>& out);
+	static void split(std::string line, std::vector<std::string>&);
 };

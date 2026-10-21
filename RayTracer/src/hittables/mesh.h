@@ -24,6 +24,8 @@ public:
 			cum_sum += tris[k]->get_surface_area();
 			cdf[k] = cum_sum / total_area;
 		}
+
+		std::cout << "Done\n";
 	}
 
 	const hit_record intersect(const ray& ray) override;
