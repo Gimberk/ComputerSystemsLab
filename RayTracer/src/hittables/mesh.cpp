@@ -12,7 +12,7 @@ const hit_record mesh::intersect(const ray& ray) {
     int index = -1;
 
     for (int i = 0; i < tris.size(); i++) {
-        std::shared_ptr<triangle> tri = tris[i];
+        std::shared_ptr<triangle>& tri = tris[i];
         const hit_record record = tri->intersect(ray);
         if (record.t > 0.0f && record.t < closest_t) {
             closest_t = record.t;
@@ -22,8 +22,6 @@ const hit_record mesh::intersect(const ray& ray) {
     }
 
     if (closest_t == std::numeric_limits<float>::max()) return hit_record();
-
-    hits[quantize(ray.point(closest_t))] = index;
     return hit_record(closest_t, closest);
 }
 

@@ -190,8 +190,12 @@
     <ClInclude Include="src\hittables\triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\mars.hdr" />
+    <None Include="assets\old.hdr" />
     <None Include="assets\sky_box.exr" />
     <None Include="assets\sky_box.hdr" />
+    <None Include="assets\sunny.hdr" />
+    <None Include="assets\water.hdr" />
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
   </ItemGroup>

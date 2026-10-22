@@ -7,8 +7,6 @@
 const hit_record triangle::intersect(const ray& r) {
 	constexpr double epsilon = 1e-7;
 
-	const vec3 edge1 = points[1] - points[0], edge2 = points[2] - points[0];
-
 	const vec3 h = cross(r.direction(), edge2);
 	const double a = dot(edge1, h);
 
@@ -31,7 +29,6 @@ const hit_record triangle::intersect(const ray& r) {
 }
 
 const vec3 triangle::get_normal(const point3& hit_point) const {
-	const vec3 edge1 = points[1] - points[0], edge2 = points[2] - points[0];
 	return cross(edge1, edge2);
 }
 

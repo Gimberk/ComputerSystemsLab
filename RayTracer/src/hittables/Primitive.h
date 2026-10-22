@@ -17,7 +17,7 @@ public:
 	primitive(primitive&&) noexcept = default;
 	primitive& operator=(primitive&&) noexcept = default;
 
-	primitive(primitive_type type) : type(type){}
+	//primitive(primitive_type type) : type(type){}
 
 	primitive(primitive_type type, std::unique_ptr<material> mat) : type(type), mat(std::move(mat)) {}
 

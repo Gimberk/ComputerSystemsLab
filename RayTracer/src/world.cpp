@@ -112,7 +112,8 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 			const ray shadow_ray(hit_point + normal * epsilon, light_direction);
 
 			primitive* ignore = light_source.get();
-			const bool blocked = find_any_hit(shadow_ray, dist * 1.01, ignore);
+
+			const bool blocked = find_any_hit(shadow_ray, dist * 1.01, ignore); // bad
 
 			if (!blocked) {
 				// perform the rest of NEE now that there is a direct path

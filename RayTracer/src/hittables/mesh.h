@@ -10,7 +10,7 @@
 
 class mesh : public primitive {
 public:
-	mesh(const std::vector<std::shared_ptr<triangle>>& tris) : primitive(primitive_type::mesh), tris(tris) {
+	mesh(const std::vector<std::shared_ptr<triangle>>& tris, std::unique_ptr<material> mat) : primitive(primitive_type::mesh, std::move(mat)), tris(tris) {
 		std::cout << "Created mesh with " << tris.size() << " triangles!" << '\n';
 
 		for (const auto& tri : tris) total_area += tri->get_surface_area();
@@ -42,5 +42,5 @@ private:
 	std::vector<double> cdf; // cumulative distribution function
 
 	std::vector<std::shared_ptr<triangle>> tris;
-	std::unordered_map<point3, int, vec3_hash> hits; // hit, triangle index
+	//std::unordered_map<point3, int, vec3_hash> hits; // hit, triangle index
 };

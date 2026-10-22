@@ -17,7 +17,9 @@ public:
 
 	triangle(const std::array<vec3, 3>& points, std::unique_ptr<material> mat)
 		: primitive(primitive_type::sphere, std::move(mat)), points(points) {
-		const vec3 edge1 = points[0] - points[1], edge2 = points[2] - points[1];
+		edge1 = points[0] - points[1];
+		edge2 = points[2] - points[1];
+
 		surface_area = 0.5 * cross(edge1, edge2).length();
 	}
 
@@ -31,4 +33,5 @@ public:
 
 private:
 	double surface_area;
+	vec3 edge1, edge2;
 };

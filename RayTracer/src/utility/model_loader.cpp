@@ -16,7 +16,7 @@ std::string model_loader::get_model_path() {
     #ifndef _MSC_VER
         return "/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/obj/";
     #else
-        return "C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\obj\\";`
+        return "C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\obj\\";
     #endif
 }
 
@@ -80,7 +80,7 @@ std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::strin
         vec3 normalB = normals[face.normal_indices.y];
         vec3 normalC = normals[face.normal_indices.z];
 
-        std::shared_ptr<triangle> tri = std::make_shared<triangle>(std::array<vec3, 3>{vertexA, vertexB, vertexB}, std::make_unique<material>(get_null_mat()));
+        std::shared_ptr<triangle> tri = std::make_shared<triangle>(std::array<vec3, 3>{vertexA, vertexB, vertexC}, std::make_unique<material>(get_null_mat()));
         
         vec3 triangleNormals[3] = { normalA, normalB, normalC };
         //tri.SetNormals(triangleNormals); // only needed for barycentric shading

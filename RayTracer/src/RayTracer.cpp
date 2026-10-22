@@ -82,7 +82,7 @@ int main()
 	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100,
 		std::make_unique<material>(color(0.78, 0.34, 1))));
 
-	scene.create_object(std::make_shared<mesh>(model_loader::load_model(model_loader::get_model_path() + "/pawn.obj")));
+	scene.create_object(std::make_shared<mesh>(model_loader::load_model(model_loader::get_model_path() + "/pawn.obj"), std::make_unique<material>(color(1,1,1))));
 
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
