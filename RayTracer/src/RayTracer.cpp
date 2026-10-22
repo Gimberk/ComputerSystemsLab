@@ -73,7 +73,7 @@ int main()
 
 	world scene(&cam, &sky);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, -0.), 0.3, 
+	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
 		std::make_unique<material>(color(0.67, 0.5, 1), color(1,1,1), 1)));
 
 	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
@@ -170,7 +170,7 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 50;
+	const int accumulation_count = 3;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){

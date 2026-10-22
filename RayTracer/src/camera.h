@@ -42,7 +42,7 @@ public:
 	vec3 viewport_uppper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
 	vec3 pixel00_location = viewport_uppper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-	camera() : center(vec3(0, 0, 0)), accumulation(image_width * image_height), accumulation_count(0) {}
+	camera() : center(vec3(0, 0, 0.5)), accumulation(image_width * image_height), accumulation_count(0) {}
 
 	const vec3 forward_vector() const {
 		const double pitch_rad = to_radians(pitch), yaw_rad = to_radians(yaw);
