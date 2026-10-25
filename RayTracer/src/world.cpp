@@ -48,6 +48,8 @@ const hit_record world::intersect_world(const ray& r) const {
 	const primitive* closest_obj = nullptr;
 
 	for (const std::shared_ptr<primitive>& obj : get_objects()) {
+		//if (obj->type == primitive_type::mesh) continue;
+
 		const hit_record hit = obj->intersect(r);
 
 		if (hit.valid && hit.t < closest_so_far && hit.t > 0.001) {
@@ -86,7 +88,7 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 	}
 
 	const point3 hit_point = r.point(record.t);
-	const vec3 normal = obj->get_normal(hit_point);
+	const vec3 normal = obj->get_normal(record, hit_point);
 
 	const color albedo = obj->mat->albedo;
 
@@ -211,7 +213,7 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	auto end = std::chrono::high_resolution_clock::now();
 	time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	//std::cout << "Generated framebuffer in " << std::fixed << time_taken << std::setprecision(9) << " sec for " << ray_count << " rays." << '\n';
+	std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
 	return &framebuffer;
 }
 

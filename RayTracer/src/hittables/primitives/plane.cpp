@@ -1,6 +1,6 @@
 #include "plane.h"
 
-#include "../utility/random.h"
+#include "../../utility/random.h"
 
 const hit_record plane::intersect(const ray& r) {
 	constexpr double epsilon = 1e-7;

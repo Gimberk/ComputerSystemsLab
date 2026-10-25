@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "../utility/vec3.h"
+#include "../../utility/vec3.h"
 #include "Primitive.h"
-#include "../utility/color.h"
+#include "../../utility/color.h"
 
 class sphere : public primitive {
 public:

@@ -13,7 +13,7 @@
 
 #include "utility/thread_pool.h"
 
-#include "hittables/sphere.h"
+#include "hittables/primitives/sphere.h"
 #include "hittables/mesh.h"
 
 #include <filesystem>
@@ -73,7 +73,7 @@ int main()
 
 	world scene(&cam, &sky);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
+	scene.create_object(std::make_shared<sphere>(point3(3, 4, 0), 0.3, 
 		std::make_unique<material>(color(0.67, 0.5, 1), color(1,1,1), 1)));
 
 	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,

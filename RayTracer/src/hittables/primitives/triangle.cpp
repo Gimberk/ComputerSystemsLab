@@ -1,6 +1,6 @@
 #include "triangle.h"
 
-#include "../utility/random.h"
+#include "../../utility/random.h"
 
 // we'll use the Moller-Trumbore algorithm--it's apparently very fast:
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
@@ -26,10 +26,6 @@ const hit_record triangle::intersect(const ray& r) {
 	const double t = f * dot(edge2, q);
 
 	return t > epsilon ? hit_record(t, this) : hit_record();
-}
-
-const vec3 triangle::get_normal(const point3& hit_point) const {
-	return cross(edge1, edge2);
 }
 
 const point3 triangle::sample_random_point() const {

@@ -18,7 +18,7 @@
     <ClCompile Include="src\RayTracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hittables\sphere.cpp">
+    <ClCompile Include="src\hittables\primitives\sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\utility\color.cpp">
@@ -39,16 +39,19 @@
     <ClCompile Include="src\hittables\skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hittables\triangle.cpp">
+    <ClCompile Include="src\hittables\primitives\triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\hittables\plane.cpp">
+    <ClCompile Include="src\hittables\primitives\plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\hittables\mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\utility\model_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hittables\aabb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,13 +68,13 @@
     <ClInclude Include="src\utility\random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hittables\Primitive.h">
+    <ClInclude Include="src\hittables\primitives\Primitive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utility\hit_record.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hittables\sphere.h">
+    <ClInclude Include="src\hittables\primitives\sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\hittables\material.h">
@@ -101,10 +104,10 @@
     <ClInclude Include="src\ext\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hittables\triangle.h">
+    <ClInclude Include="src\hittables\primitives\triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\hittables\plane.h">
+    <ClInclude Include="src\hittables\primitives\plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utility\math.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utility\model_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hittables\aabb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,19 +1,21 @@
 #include "mesh.h"
-#include "triangle.h"
+#include "primitives/triangle.h"
 
 #include "../utility/random.h"
 
 #include <iostream>
 #include <cstdlib>
 
-const hit_record mesh::intersect(const ray& ray) {
+const hit_record mesh::intersect(const ray& r) {
+    if (!bounding_box.intersect(r)) return hit_record();
+
     triangle* closest = nullptr;
     float closest_t = std::numeric_limits<float>::max();
     int index = -1;
 
     for (int i = 0; i < tris.size(); i++) {
         std::shared_ptr<triangle>& tri = tris[i];
-        const hit_record record = tri->intersect(ray);
+        const hit_record record = tri->intersect(r);
         if (record.t > 0.0f && record.t < closest_t) {
             closest_t = record.t;
             index = i;
@@ -26,7 +28,8 @@ const hit_record mesh::intersect(const ray& ray) {
 }
 
 const vec3 mesh::get_normal(const point3& p) const {
-    constexpr double EPSILON = 1e-6;
+    std::abort();
+    /*constexpr double EPSILON = 1e-6;
 
     for (const auto& tri : tris) {
         const point3& a = tri->points[0];
@@ -69,8 +72,12 @@ const vec3 mesh::get_normal(const point3& p) const {
         }
     }
 
-    std::cerr << "You're screwed. No such triangle exists. You mind doing better next time?\n";
-    std::abort();
+    std::cerr << "You're screwed. No such triangle exists. Do you mind doing better next time?\n";
+    std::abort();*/
+}
+
+const vec3 mesh::get_normal(const hit_record& record, const point3& hit_point) const {
+    return record.object->get_normal(hit_point);
 }
 
 const point3 mesh::sample_random_point() const {
@@ -79,4 +86,36 @@ const point3 mesh::sample_random_point() const {
     const int tri_index = std::distance(cdf.begin(), it);
 
     return tris[tri_index]->sample_random_point();
+}
+
+const aabb mesh::compute_bounds() const {
+    constexpr double inf = std::numeric_limits<double>::infinity();
+
+    point3 min(inf, inf, inf), max(-inf, -inf, -inf);
+
+    for (const auto& tri : tris) {
+        for (const auto& p : tri->points) {
+            min.x = std::min(min.x, p.x);
+            min.y = std::min(min.y, p.y);
+            min.z = std::min(min.z, p.z);
+
+            max.x = std::max(max.x, p.x);
+            max.y = std::max(max.y, p.y);
+            max.z = std::max(max.z, p.z);
+        }
+    }
+
+    if (tris.empty()) return aabb();
+
+    constexpr double padding = 1e-6;
+
+    min.x -= padding;
+    min.y -= padding;
+    min.z -= padding;
+
+    max.x += padding;
+    max.y += padding;
+    max.z += padding;
+
+    return aabb(min, max);
 }

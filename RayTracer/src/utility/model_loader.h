@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include "../hittables/triangle.h"
+#include "../hittables/primitives/triangle.h"
 
 class model_loader
 {

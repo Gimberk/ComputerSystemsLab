@@ -20,6 +20,8 @@ public:
 		edge1 = points[1] - points[0];
 		edge2 = points[2] - points[0];
 
+		normal = unit_vector(cross(edge1, edge2));
+
 		surface_area = 0.5 * cross(edge1, edge2).length();
 	}
 
@@ -29,9 +31,11 @@ public:
 
 	const double get_surface_area() const override { return surface_area; };
 
-	const vec3 get_normal(const point3& hit_point) const override;
+	const vec3 get_normal(const point3& hit_point) const override { return normal; }
 
 private:
 	double surface_area;
 	vec3 edge1, edge2;
+
+	vec3 normal;
 };

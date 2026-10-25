@@ -8,8 +8,8 @@
 #include <cstdlib>
 
 struct face {
-    vec3 vertex_indices;
-    vec3 normal_indices;
+    std::array<int, 3> vertex_indices;
+    std::array<int, 3> normal_indices;
 };
 
 std::string model_loader::get_model_path() { 
@@ -51,18 +51,13 @@ std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::strin
             face face;
             char dummy;
 
-            // OBJ indices are 1-based, convert them to 0-based
-            s >> face.vertex_indices.x >> dummy >> dummy >> face.normal_indices.x;
-            face.vertex_indices.x--;
-            face.normal_indices.x--;
+            for (int i = 0; i < 3; i++) {
+                s >> face.vertex_indices[i] >> dummy >> dummy >> face.normal_indices[i];
 
-            s >> face.vertex_indices.y >> dummy >> dummy >> face.normal_indices.y;
-            face.vertex_indices.y--;
-            face.normal_indices.y--;
-
-            s >> face.vertex_indices.z >> dummy >> dummy >> face.normal_indices.z;
-            face.vertex_indices.z--;
-            face.normal_indices.z--;
+                // OBJ indices are 1-based, convert them to 0-based
+                face.vertex_indices[i]--;
+                face.normal_indices[i]--;
+            }
 
             faces.push_back(face);
         }
@@ -72,13 +67,13 @@ std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::strin
 
     std::vector<std::shared_ptr<triangle>> tris;
     for (const face& f : faces) {
-        vec3 vertexA = vertices[f.vertex_indices.x];
-        vec3 vertexB = vertices[f.vertex_indices.y];
-        vec3 vertexC = vertices[f.vertex_indices.z];
+        vec3 vertexA = vertices[f.vertex_indices[0]];
+        vec3 vertexB = vertices[f.vertex_indices[1]];
+        vec3 vertexC = vertices[f.vertex_indices[2]];
 
-        vec3 normalA = normals[f.normal_indices.x];
-        vec3 normalB = normals[f.normal_indices.y];
-        vec3 normalC = normals[f.normal_indices.z];
+        vec3 normalA = normals[f.normal_indices[0]];
+        vec3 normalB = normals[f.normal_indices[1]];
+        vec3 normalC = normals[f.normal_indices[2]];
 
         std::shared_ptr<triangle> tri = std::make_shared<triangle>(std::array<vec3, 3>{vertexA, vertexB, vertexC}, std::make_unique<material>(get_null_mat()));
         

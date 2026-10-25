@@ -153,32 +153,34 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hittables\aabb.cpp" />
     <ClCompile Include="src\hittables\mesh.cpp" />
-    <ClCompile Include="src\hittables\plane.cpp" />
+    <ClCompile Include="src\hittables\primitives\plane.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\hittables\skybox.cpp" />
     <ClCompile Include="src\RayTracer.cpp" />
-    <ClCompile Include="src\hittables\sphere.cpp" />
+    <ClCompile Include="src\hittables\primitives\sphere.cpp" />
     <ClCompile Include="src\utility\color.cpp" />
     <ClCompile Include="src\utility\model_loader.cpp" />
     <ClCompile Include="src\world.cpp" />
     <ClCompile Include="src\utility\thread_pool.cpp" />
-    <ClCompile Include="src\hittables\triangle.cpp" />
+    <ClCompile Include="src\hittables\primitives\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\hittables\aabb.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />
     <ClInclude Include="src\hittables\mesh.h" />
-    <ClInclude Include="src\hittables\plane.h" />
+    <ClInclude Include="src\hittables\primitives\plane.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\ext\stb_image.h" />
     <ClInclude Include="src\ext\stb_image_write.h" />
     <ClInclude Include="src\hittables\skybox.h" />
-    <ClInclude Include="src\hittables\sphere.h" />
+    <ClInclude Include="src\hittables\primitives\sphere.h" />
     <ClInclude Include="src\hittables\material.h" />
     <ClInclude Include="src\utility\color.h" />
-    <ClInclude Include="src\hittables\Primitive.h" />
+    <ClInclude Include="src\hittables\primitives\Primitive.h" />
     <ClInclude Include="src\utility\hit_record.h" />
     <ClInclude Include="src\utility\math.h" />
     <ClInclude Include="src\utility\model_loader.h" />
@@ -187,7 +189,7 @@
     <ClInclude Include="src\utility\vec3.h" />
     <ClInclude Include="src\world.h" />
     <ClInclude Include="src\utility\thread_pool.h" />
-    <ClInclude Include="src\hittables\triangle.h" />
+    <ClInclude Include="src\hittables\primitives\triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\mars.hdr" />

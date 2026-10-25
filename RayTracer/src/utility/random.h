@@ -53,8 +53,8 @@ namespace utility {
 		return (scrambled >> 11) * (1.0 / 9007199254740992.0); // 1.0 / 2^53 (max double val)
 	}
 
-	// min and max are INCLUSIVE
+	// min is inclusive; max is exclusive
 	inline int random_integer_bounds(const int min, const int max) {
-		return min + static_cast<int>(random_float32() * (max - min + 1));
+		return min + static_cast<int>(random_float32() * (max - min));
 	}
 }

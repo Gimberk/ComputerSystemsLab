@@ -137,3 +137,11 @@ inline vec3 quantize(const point3& p, double epsilon = 1e-4) {
 				std::round(p.y * (1.0 / epsilon)) * epsilon, 
 				std::round(p.z * (1.0 / epsilon)) * epsilon);
 }
+
+inline double component(const vec3& u, const int i) {
+	switch (i) {
+	case 0: return u.x;
+	case 1: return u.y;
+	default: return u.z;
+	}
+}
