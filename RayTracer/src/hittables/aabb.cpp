@@ -31,3 +31,32 @@ const bool aabb::intersect(const ray& r) const {
 
 	return t_max > 0.0;
 }
+
+void aabb::pad(const double padding) {
+	min.x -= padding;
+	min.y -= padding;
+	min.z -= padding;
+
+	max.x += padding;
+	max.y += padding;
+	max.z += padding;
+}
+
+void aabb::expand(const aabb& other) {
+	for (int axis = 0; axis < 3; axis++) {
+		min[axis] = std::min(min[axis], other.min[axis]);
+		max[axis] = std::max(max[axis], other.max[axis]);
+	}
+}
+
+void aabb::expand(const point3& other) {
+	for (int axis = 0; axis < 3; axis++) {
+		min[axis] = std::min(min[axis], other[0]);
+		max[axis] = std::max(max[axis], other[axis]);
+	}
+}
+
+const int aabb::longest_axis() const {
+	const point3 size = max - min;
+	return std::max_element(&size[0], &size[3]) - &size[0];
+}

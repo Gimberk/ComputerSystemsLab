@@ -7,11 +7,12 @@
 #include "primitives/triangle.h"
 
 #include "aabb.h"
+#include "../utility/bvh.h"
 
 class mesh : public primitive {
 public:
 	mesh(const std::vector<std::shared_ptr<triangle>>& tris, std::unique_ptr<material> mat) : primitive(primitive_type::mesh, 
-		std::move(mat)), tris(tris), bounding_box(compute_bounds()) {
+		std::move(mat)), tris(tris), acceleration(&tris) {
 		std::cout << "Created mesh with " << tris.size() << " triangles!" << '\n';
 
 		for (const auto& tri : tris) total_area += tri->get_surface_area();
@@ -38,10 +39,6 @@ public:
 			std::cout << "  normal: " << tris[i]->get_normal(vec3()) << '\n';
 			std::cout << "  area: " << tris[i]->get_surface_area() << "\n\n";
 		}
-
-		std::cout << "Mesh bounds:\n";
-		std::cout << "min = " << bounding_box.min << '\n';
-		std::cout << "max = " << bounding_box.max << '\n';
 	}
 
 	const hit_record intersect(const ray& r) override;
@@ -60,9 +57,7 @@ private:
 	double total_area;
 
 	std::vector<double> cdf; // cumulative distribution function
-
 	std::vector<std::shared_ptr<triangle>> tris;
-	//std::unordered_map<point3, int, vec3_hash> hits; // hit, triangle index
 
-	const aabb bounding_box;
+	const bvh acceleration;
 };

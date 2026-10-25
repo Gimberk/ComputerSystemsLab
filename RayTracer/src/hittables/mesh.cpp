@@ -7,24 +7,7 @@
 #include <cstdlib>
 
 const hit_record mesh::intersect(const ray& r) {
-    if (!bounding_box.intersect(r)) return hit_record();
-
-    triangle* closest = nullptr;
-    float closest_t = std::numeric_limits<float>::max();
-    int index = -1;
-
-    for (int i = 0; i < tris.size(); i++) {
-        std::shared_ptr<triangle>& tri = tris[i];
-        const hit_record record = tri->intersect(r);
-        if (record.t > 0.0f && record.t < closest_t) {
-            closest_t = record.t;
-            index = i;
-            closest = tri.get();
-        }
-    }
-
-    if (closest_t == std::numeric_limits<float>::max()) return hit_record();
-    return hit_record(closest_t, closest);
+    return acceleration.intersect(r);
 }
 
 const vec3 mesh::get_normal(const point3& p) const {
@@ -107,15 +90,10 @@ const aabb mesh::compute_bounds() const {
 
     if (tris.empty()) return aabb();
 
+    aabb bb(min, max);
+    
     constexpr double padding = 1e-6;
+    bb.pad(padding);
 
-    min.x -= padding;
-    min.y -= padding;
-    min.z -= padding;
-
-    max.x += padding;
-    max.y += padding;
-    max.z += padding;
-
-    return aabb(min, max);
+    return bb;
 }

@@ -3,6 +3,7 @@
 #include <array>
 
 #include "Primitive.h"
+#include "../aabb.h"
 
 class triangle : public primitive
 {
@@ -32,6 +33,10 @@ public:
 	const double get_surface_area() const override { return surface_area; };
 
 	const vec3 get_normal(const point3& hit_point) const override { return normal; }
+
+	const aabb get_bounds() const;
+
+	const point3 get_centroid() const;
 
 private:
 	double surface_area;

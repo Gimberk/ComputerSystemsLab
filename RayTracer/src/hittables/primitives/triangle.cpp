@@ -44,3 +44,23 @@ const point3 triangle::sample_random_point() const {
 
 	return point3(x, y, z);
 };
+
+const aabb triangle::get_bounds() const {
+	point3 min = points[0], max = points[0];
+
+	for (int i = 1; i < 3; i++) {
+		for (int axis = 0; axis < 3; axis++) {
+			point3 pt = points[i];
+			min[axis] = std::min(min[axis], pt[axis]);
+			max[axis] = std::max(max[axis], pt[axis]);
+		}
+	}
+
+	constexpr double padding = 1e-6;
+	aabb bb(min, max);
+	bb.pad(padding);
+}
+
+const point3 triangle::get_centroid() const {
+	return (points[0] + points[1] + points[2]) / 3.0;
+}

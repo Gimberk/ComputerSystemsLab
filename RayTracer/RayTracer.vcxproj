@@ -153,6 +153,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\utility\bvh.cpp" />
     <ClCompile Include="src\hittables\aabb.cpp" />
     <ClCompile Include="src\hittables\mesh.cpp" />
     <ClCompile Include="src\hittables\primitives\plane.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="src\hittables\primitives\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\utility\bvh.h" />
     <ClInclude Include="src\hittables\aabb.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3native.h" />

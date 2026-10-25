@@ -20,7 +20,7 @@ std::string model_loader::get_model_path() {
     #endif
 }
 
-std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::string path) {
+std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::string path, const vec3& offset, const double scale) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file at " << path << std::endl;
@@ -38,7 +38,7 @@ std::vector<std::shared_ptr<triangle>> model_loader::load_model(const std::strin
             std::istringstream s(line.substr(2));
             vec3 v;
             s >> v.x >> v.y >> v.z;
-            vertices.push_back(v);
+            vertices.push_back(v * scale + offset);
         }
         else if (line.substr(0, 3) == "vn ") {
             std::istringstream s(line.substr(3));

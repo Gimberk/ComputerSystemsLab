@@ -5,15 +5,19 @@
 #include <iostream>
 #include <numbers>
 #include <functional>
+#include <type_traits>
 
 constexpr double PI = 3.14159265358979323846;
 
-class vec3 {
+class alignas(double) vec3 {
 public:
 	double x, y, z;
 
 	vec3() : x(0), y(0), z(0) {}
 	vec3(double x, double y, double z) : x(x), y(y), z(z) {}
+
+	const double* data() const { return &x; }
+	double* data() { return &x; }
 
 	vec3 operator-() const { return vec3(-x, -y, -z); }
 
@@ -45,6 +49,14 @@ public:
 		return *this;
 	}
 
+	double& operator[](const int v) {
+		return component(*this, v);
+	}
+
+	const double& operator[](const int v) const {
+		return component(*this, v);
+	}
+
 	bool operator==(const vec3& v) const {
 		return x == v.x && y == v.y && z == v.z;
 	}
@@ -61,6 +73,8 @@ public:
 
 	bool near_zero() const { return length() < 0.05; }
 };
+
+static_assert(std::is_standard_layout_v<vec3>, "vec3 must be a standard layout class!");
 
 using point3 = vec3;
 
@@ -138,7 +152,15 @@ inline vec3 quantize(const point3& p, double epsilon = 1e-4) {
 				std::round(p.z * (1.0 / epsilon)) * epsilon);
 }
 
-inline double component(const vec3& u, const int i) {
+inline double& component(vec3& u, const int i) {
+	switch (i) {
+	case 0: return u.x;
+	case 1: return u.y;
+	default: return u.z;
+	}
+}
+
+inline const double component(const vec3& u, const int i) {
 	switch (i) {
 	case 0: return u.x;
 	case 1: return u.y;
