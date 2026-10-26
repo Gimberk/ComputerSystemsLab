@@ -49,11 +49,27 @@ public:
 		return *this;
 	}
 
+	static double& component(vec3& u, const int i) {
+		switch (i) {
+		case 0: return u.x;
+		case 1: return u.y;
+		default: return u.z;
+		}
+	}
+
+	static const double component(const vec3& u, const int i) {
+		switch (i) {
+		case 0: return u.x;
+		case 1: return u.y;
+		default: return u.z;
+		}
+	}
+
 	double& operator[](const int v) {
 		return component(*this, v);
 	}
 
-	const double& operator[](const int v) const {
+	const double operator[](const int v) const {
 		return component(*this, v);
 	}
 
@@ -150,20 +166,4 @@ inline vec3 quantize(const point3& p, double epsilon = 1e-4) {
 	return vec3(std::round(p.x * (1.0 / epsilon)) * epsilon, 
 				std::round(p.y * (1.0 / epsilon)) * epsilon, 
 				std::round(p.z * (1.0 / epsilon)) * epsilon);
-}
-
-inline double& component(vec3& u, const int i) {
-	switch (i) {
-	case 0: return u.x;
-	case 1: return u.y;
-	default: return u.z;
-	}
-}
-
-inline const double component(const vec3& u, const int i) {
-	switch (i) {
-	case 0: return u.x;
-	case 1: return u.y;
-	default: return u.z;
-	}
 }

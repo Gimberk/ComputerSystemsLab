@@ -8,10 +8,10 @@ const bool aabb::intersect(const ray& r) const {
 	double t_max = std::numeric_limits<double>::infinity();
 
 	for (int axis = 0; axis < 3; axis++) {
-		const double origin = component(r.origin(), axis);
-		const double direction = component(r.direction(), axis);
-		const double slab_min = component(min, axis);
-		const double slab_max = component(max, axis);
+		const double origin = vec3::component(r.origin(), axis);
+		const double direction = vec3::component(r.direction(), axis);
+		const double slab_min = vec3::component(min, axis);
+		const double slab_max = vec3::component(max, axis);
 
 		if (std::abs(direction) < 1e-12) {
 			if (origin < slab_min || origin > slab_max) return false;
@@ -58,5 +58,12 @@ void aabb::expand(const point3& other) {
 
 const int aabb::longest_axis() const {
 	const point3 size = max - min;
-	return std::max_element(&size[0], &size[3]) - &size[0];
+
+	double abs_x = std::abs(size.x);
+    double abs_y = std::abs(size.y);
+    double abs_z= std::abs(size.z);
+
+    if (abs_x >= abs_y && abs_x >= abs_z) return 0;
+    else if (abs_y >= abs_z) return 1;
+    else return 2;
 }

@@ -1,5 +1,5 @@
-#include "utility/model_loader.h"
 #include <memory>
+#include <filesystem>
 
 #ifdef _MSC_VER
 #include <glad/glad.h>
@@ -16,7 +16,7 @@
 #include "hittables/primitives/sphere.h"
 #include "hittables/mesh.h"
 
-#include <filesystem>
+#include "utility/model_loader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

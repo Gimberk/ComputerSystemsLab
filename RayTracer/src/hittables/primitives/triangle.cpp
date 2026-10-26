@@ -59,6 +59,8 @@ const aabb triangle::get_bounds() const {
 	constexpr double padding = 1e-6;
 	aabb bb(min, max);
 	bb.pad(padding);
+
+	return bb;
 }
 
 const point3 triangle::get_centroid() const {
