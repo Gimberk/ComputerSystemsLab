@@ -51,7 +51,7 @@ void aabb::expand(const aabb& other) {
 
 void aabb::expand(const point3& other) {
 	for (int axis = 0; axis < 3; axis++) {
-		min[axis] = std::min(min[axis], other[0]);
+		min[axis] = std::min(min[axis], other[axis]);
 		max[axis] = std::max(max[axis], other[axis]);
 	}
 }

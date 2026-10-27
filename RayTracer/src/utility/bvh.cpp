@@ -7,11 +7,20 @@ int bvh::build(const int start, const int end) {
 	const int node_index = static_cast<int>(nodes.size());
 	nodes.emplace_back();
 
-	aabb bounds;
-	aabb centroid_bounds;
+	constexpr double inf = std::numeric_limits<double>::infinity();
 
-	for (int i = 0; i < end; i++) {
-		const triangle& tri = *(*tris)[indices[i]];
+	aabb bounds(
+		point3(inf, inf, inf),
+		point3(-inf, -inf, -inf)
+	);
+
+	aabb centroid_bounds(
+		point3(inf, inf, inf),
+		point3(-inf, -inf, -inf)
+	);
+
+	for (int i = start; i < end; i++) {
+		const triangle& tri = *tris[indices[i]];
 
 		bounds.expand(tri.get_bounds());
 		centroid_bounds.expand(tri.get_centroid());
@@ -35,7 +44,7 @@ int bvh::build(const int start, const int end) {
 		indices.begin() + mid,
 		indices.begin() + end,
 		[&](int a, int b) {
-			return (*tris)[a]->get_centroid()[axis] < (*tris)[b]->get_centroid()[axis];
+			return tris[a]->get_centroid()[axis] < tris[b]->get_centroid()[axis];
 		}
 	);
 
@@ -48,8 +57,8 @@ int bvh::build(const int start, const int end) {
 	return node_index;
 }
 
-bvh::bvh(const std::vector<std::shared_ptr<triangle>>* triangles) : tris(triangles) {
-	indices.resize(tris->size());
+bvh::bvh(const std::vector<std::shared_ptr<triangle>>& triangles) : tris(triangles) {
+	indices.resize(tris.size());
 	std::iota(indices.begin(), indices.end(), 0);
 
 	if (!indices.empty()) build(0, static_cast<int>(indices.size()));
@@ -69,17 +78,18 @@ const hit_record bvh::intersect_node(const int index, const ray& r) const {
 	if (n.is_leaf()) {
 		primitive* closest = nullptr;
 		double closest_t = std::numeric_limits<double>::infinity();
-
+		 
 		for (int i = n.start; i < n.start + n.count; i++) {
-			const hit_record hit = (*tris)[indices[i]]->intersect(r);
+			const std::shared_ptr<triangle>& tri = tris[indices[i]];
+			const hit_record hit = tri->intersect(r);
 
 			if (hit.valid && hit.t > 0.001 && hit.t < closest_t) {
 				closest_t = hit.t;
-				closest = (*tris)[indices[i]].get();
+				closest = tris[indices[i]].get();
 			}
 		}
 
-		return hit_record(closest_t, closest);
+		return closest == nullptr ? hit_record() : hit_record(closest_t, closest);
 	}
 
 	const hit_record a = intersect_node(n.left, r), b = intersect_node(n.right, r);

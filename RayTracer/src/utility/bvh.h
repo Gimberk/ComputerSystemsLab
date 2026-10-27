@@ -7,11 +7,10 @@
 
 class bvh {
 public:
-	explicit bvh(const std::vector<std::shared_ptr<triangle>>* triangles);
+	explicit bvh(const std::vector<std::shared_ptr<triangle>>& triangles);
 
 	const hit_record intersect(const ray& r) const;
 
-private:
 	struct node {
 		aabb bounds;
 
@@ -29,7 +28,7 @@ private:
 	std::vector<node> nodes;
 	std::vector<int> indices;
 
-	const std::vector<std::shared_ptr<triangle>>* tris;
+	const std::vector<std::shared_ptr<triangle>> tris;
 
 	int build(int start, int end);
 
