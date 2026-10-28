@@ -23,14 +23,17 @@ const std::shared_ptr<primitive>& world::sample_random_light_source() const {
 void world::create_object(const std::shared_ptr<primitive>& obj) {
 	objects.emplace_back(obj);
 
-	if (!obj->has_material()) return;
+	if (!obj->has_material()) {
+		std::cerr << "Object not created; lacking material!" << '\n';
+		return;
+	}
 
 	if (obj->mat->emission_intensity > epsilon) emissive_objects.emplace_back(obj);
 }
 
-const bool world::find_any_hit(const ray & r, double max_t, primitive* ignore) const {
+const bool world::find_any_hit(const ray & r, double max_t) const {
 	for (const auto& obj : objects) {
-		if (obj.get() == ignore) continue;
+		//if (obj.get() == ignore) continue;
 
 		if (!obj->mat->emission_color.near_zero()) continue;
 
@@ -65,7 +68,7 @@ const hit_record world::intersect_world(const ray& r) const {
 static std::atomic<uint16_t> ray_count = 0;
 
 color world::ray_color(const ray& r, const int depth, const double previous_bsdf_pdf, 
-	const point3& previous_point, const bool has_previous_surface) const {
+	const point3& previous_point, const bool has_previous_surface, const bool previous_was_delta) const {
 	ray_count++;
 	
 	if (depth >= max_ray_depth)
@@ -77,76 +80,104 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 		return world::BLACK;
 
 	const primitive* obj = record.object;
+	const material* mat = obj->mat.get();
 
-	const color emission = obj->mat->emission_color * obj->mat->emission_intensity;
+	// this is the NEE / MIS implementation
+
+	const color emission = mat->emission_color * mat->emission_intensity;
 	if (!emission.near_zero()) {
-		if (!has_previous_surface) return emission; // if this is a camera ray
+		// if this is a camera ray or if there was a delta event in which MIS doesn't apply:
+		if (!has_previous_surface || previous_was_delta) return emission;
 
-		const double weight_bsdf = utility::power_heuristic(previous_bsdf_pdf, utility::light_pdf_for_hit(get_light_select_pdf(), 
-															previous_point, r.origin(), *obj));
+		const double light_pdf = utility::light_pdf_for_hit(get_light_select_pdf(), previous_point, r.origin(), *obj);
+		const double weight_bsdf = utility::power_heuristic(previous_bsdf_pdf, light_pdf);
+
 		return emission * weight_bsdf;
 	}
 
+	// surface info
+
 	const point3 hit_point = r.point(record.t);
 	const vec3 normal = obj->get_normal(record, hit_point);
-
 	const color albedo = obj->mat->albedo;
 
-	// this is the NEE implementation
-	// if there are any occluders, we ignore any direct light
-	const std::shared_ptr<primitive>& light_source = sample_random_light_source();
-
-	const point3 y = light_source->sample_random_point(); // sample a point on the light
-	const vec3 to_light = y - hit_point;
-	const double dist = to_light.length();
-	const double dist_squared = dist * dist;
-	const vec3 light_direction = to_light / dist;
-
-	const double surface_cosine = std::max(0.0, dot(normal, light_direction)); // the surface cosine
+	const double metallica = std::clamp(mat->metallic, 0.0, 1.0);
+	const double diffuse_weight = 1.0 - metallica;
 
 	color direct = world::BLACK;
-	if (surface_cosine > 0.0) {
-		// light's cosine
-		const vec3 light_normal = light_source->get_normal(y);
-		const double light_cosine = std::max(0.0, dot(light_normal, -light_direction));
 
-		if (light_cosine > 0.0) {
-			const ray shadow_ray(hit_point + normal * epsilon, light_direction);
+	if (diffuse_weight > 0.0) {
+		const std::shared_ptr<primitive>& light_source = sample_random_light_source();
 
-			primitive* ignore = light_source.get();
+		const point3 y = light_source->sample_random_point(); // sample a point on the light
+		const vec3 to_light = y - hit_point;
 
-			const bool blocked = find_any_hit(shadow_ray, dist * 1.01, ignore); // bad
+		const double dist = to_light.length();
+		const double dist_squared = dist * dist;
 
-			if (!blocked) {
-				// perform the rest of NEE now that there is a direct path
-				const color Le = light_source->mat->emission_color * light_source->mat->emission_intensity;
+		if (dist > epsilon) {
+			const vec3 light_direction = to_light / dist;
+			const double surface_cosine = std::max(0.0, dot(normal, light_direction)); // the surface cosine
 
-				const color fr = albedo / utility::PI; // calculate the lambertian surface BRDF
+			if (surface_cosine > 0.0) {
+				// light's cosine
+				const vec3 light_normal = light_source->get_normal(y);
+				const double light_cosine = std::max(0.0, dot(light_normal, -light_direction));
 
-				// PDF for the light source
-				const double pdf_area = 1.0 / light_source->get_surface_area();
-				const double pdf_select = get_light_select_pdf(); // the probability of selecting the light uniformly
+				if (light_cosine > 0.0) {
+					// if there are any occluders, we ignore any direct light
+					const ray shadow_ray(hit_point + normal * epsilon, light_direction);
+					//primitive* ignore = light_source.get();
+					const bool blocked = find_any_hit(shadow_ray, dist - epsilon); // bad
 
-				// solid-angle PDF
-				const double light_pdf = pdf_select * pdf_area * dist_squared / light_cosine;
+					if (!blocked) {
+						// perform the rest of NEE now that there is a direct path
+						const color Le = light_source->mat->emission_color * light_source->mat->emission_intensity;
 
-				// BSDF PDF for the same direction
-				const double bsdf_pdf = surface_cosine / utility::PI;
+						const color fr = diffuse_weight * albedo / utility::PI;
 
-				// finally, bring it all together for calculating the direct light contribution
-				const double weight_light = utility::power_heuristic(light_pdf, bsdf_pdf);
-				direct = Le * fr * surface_cosine * weight_light / light_pdf;
+						// PDF for the light source
+						const double pdf_area = 1.0 / light_source->get_surface_area();
+						const double pdf_select = get_light_select_pdf(); // the probability of selecting the light uniformly
+
+						// solid-angle PDF
+						const double light_pdf = pdf_select * pdf_area * dist_squared / light_cosine;
+
+						// BSDF PDF for the same direction
+						const double bsdf_pdf = diffuse_weight * surface_cosine / utility::PI;
+
+						const double weight_light = utility::power_heuristic(light_pdf, bsdf_pdf);
+						
+						// and finally, voila:
+						direct = Le * fr * surface_cosine * weight_light / light_pdf;
+					}
+				}
 			}
 		}
 	}
 
 	// compute the indirect light (BSDF)
+	const bool sample_mirror = utility::random_double64() < metallica;
+	if (sample_mirror) {
+		const vec3 incident = unit_vector(r.direction());
+		const vec3 reflected = incident - 2.0 * dot(incident, normal) * normal;
+
+		if (dot(reflected, normal) <= 0.0) return direct;
+
+		const ray scattered(hit_point + normal * epsilon, reflected);
+		const color indirect = albedo * ray_color(scattered, depth + 1, 0.0, hit_point, true, true);
+
+		return direct + indirect;
+	}
+
+	// if not metallic reflection, diffuse sampling instead:
+
 	const vec3 wi = utility::random_cosine_direction(normal);
-	const double pdf_bsdf = std::max(0.0, dot(normal, wi) / utility::PI);
+	const double pdf_bsdf = std::max(0.0, diffuse_weight * dot(normal, wi) / utility::PI);
 
 	const ray scattered(hit_point + normal * epsilon, wi);
-
 	const color indirect = albedo * ray_color(scattered, depth + 1, pdf_bsdf, hit_point, true);
+
 	return direct + indirect;
 }
 

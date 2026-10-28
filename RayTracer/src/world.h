@@ -45,7 +45,7 @@ public:
 
 	const hit_record intersect_world(const ray& r) const;
 
-	color ray_color(const ray&, const int = 0, const double = 0.0, const point3& = {}, const bool = false) const;
+	color ray_color(const ray&, const int = 0, const double = 0.0, const point3& = {}, const bool = false, const bool = false) const;
 
 	const std::vector<unsigned char>* generate_image(thread_pool* pool, bool output = true);
 
@@ -65,7 +65,7 @@ private:
 	skybox* sky;
 
 private:
-	const bool find_any_hit(const ray& r, double max_t, primitive* ignore) const;
+	const bool find_any_hit(const ray& r, double max_t) const;
 
 	// the chance that this light was explicitly chosen
 	const double get_light_select_pdf() const { return 1.0 / emissive_objects.size(); }
