@@ -1,9 +1,7 @@
 #include "mesh.h"
-#include "primitives/triangle.h"
 
 #include "../utility/random.h"
 
-#include <iostream>
 #include <cstdlib>
 
 const hit_record mesh::intersect(const ray& r) {

@@ -77,8 +77,8 @@ int main()
 
 	world scene(&cam, &sky);
 
-	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
-		std::make_unique<material>(color(0.67, 0.5, 1.5), color(1,1,1), 2)));
+	//scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
+	//	std::make_unique<material>(color(0.67, 0.5, 1.5), color(1,1,1), 2)));
 
 	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
 	//	std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));
@@ -87,7 +87,7 @@ int main()
 		std::make_unique<material>(color(0.78, 0.34, 1))));
 
 	scene.create_object(std::make_shared<mesh>(model_loader::load_model(model_loader::get_model_path() + "/pawn.obj", 
-		vec3(0,-0.5,-1.0), 0.25), std::make_unique<material>(color(1,1,1))));
+		vec3(0,-0.5,-1.0), 0.25), std::make_unique<material>(color(1,1,1), 0.5, 0.0)));
 
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER
@@ -177,7 +177,7 @@ int main()
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
-	const int accumulation_count = 750;
+	const int accumulation_count = 1000;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){

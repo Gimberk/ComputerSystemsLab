@@ -1,12 +1,14 @@
 #include "world.h"
 
-#include "hittables/skybox.h"
+#include "hittables/primitives/Primitive.h"
 
 #include "utility/math.h"
 
 #include <chrono>
 #include <algorithm>
 #include <future>
+#include <iomanip>
+#include <memory>
 
 const color world::BLACK(0, 0, 0);
 const color world::WHITE(1, 1, 1);
@@ -17,6 +19,9 @@ const color world::BLUE(0, 0, 1);
 constexpr double epsilon = 1e-5;
 
 const std::shared_ptr<primitive>& world::sample_random_light_source() const {
+	static const std::shared_ptr<primitive> null_ptr;
+
+	if (emissive_objects.empty()) return null_ptr;
 	return emissive_objects[utility::random_integer_bounds(0, emissive_objects.size() - 1)];
 }
 
@@ -76,8 +81,11 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 
 	hit_record record = intersect_world(r);
 
-	if (!record.object)
+	if (!record.object){
+		if (sky->skybox_is_valid()) return sky->get_texture_sky_color(r);
+
 		return world::BLACK;
+	}
 
 	const primitive* obj = record.object;
 	const material* mat = obj->get_material();
@@ -108,48 +116,49 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 
 	if (diffuse_weight > 0.0) {
 		const std::shared_ptr<primitive>& light_source = sample_random_light_source();
+		if (!emissive_objects.empty()){
+			const point3 y = light_source->sample_random_point(); // sample a point on the light
+			const vec3 to_light = y - hit_point;
 
-		const point3 y = light_source->sample_random_point(); // sample a point on the light
-		const vec3 to_light = y - hit_point;
+			const double dist = to_light.length();
+			const double dist_squared = dist * dist;
 
-		const double dist = to_light.length();
-		const double dist_squared = dist * dist;
+			if (dist > epsilon) {
+				const vec3 light_direction = to_light / dist;
+				const double surface_cosine = std::max(0.0, dot(normal, light_direction)); // the surface cosine
 
-		if (dist > epsilon) {
-			const vec3 light_direction = to_light / dist;
-			const double surface_cosine = std::max(0.0, dot(normal, light_direction)); // the surface cosine
+				if (surface_cosine > 0.0) {
+					// light's cosine
+					const vec3 light_normal = light_source->get_normal(y);
+					const double light_cosine = std::max(0.0, dot(light_normal, -light_direction));
 
-			if (surface_cosine > 0.0) {
-				// light's cosine
-				const vec3 light_normal = light_source->get_normal(y);
-				const double light_cosine = std::max(0.0, dot(light_normal, -light_direction));
+					if (light_cosine > 0.0) {
+						// if there are any occluders, we ignore any direct light
+						const ray shadow_ray(hit_point + normal * epsilon, light_direction);
+						//primitive* ignore = light_source.get();
+						const bool blocked = find_any_hit(shadow_ray, dist - epsilon); // bad
 
-				if (light_cosine > 0.0) {
-					// if there are any occluders, we ignore any direct light
-					const ray shadow_ray(hit_point + normal * epsilon, light_direction);
-					//primitive* ignore = light_source.get();
-					const bool blocked = find_any_hit(shadow_ray, dist - epsilon); // bad
+						if (!blocked) {
+							// perform the rest of NEE now that there is a direct path
+							const color Le = light_source->get_material()->emission_color * light_source->get_material()->emission_intensity;
 
-					if (!blocked) {
-						// perform the rest of NEE now that there is a direct path
-						const color Le = light_source->get_material()->emission_color * light_source->get_material()->emission_intensity;
+							const color fr = diffuse_weight * albedo / utility::PI;
 
-						const color fr = diffuse_weight * albedo / utility::PI;
+							// PDF for the light source
+							const double pdf_area = 1.0 / light_source->get_surface_area();
+							const double pdf_select = get_light_select_pdf(); // the probability of selecting the light uniformly
 
-						// PDF for the light source
-						const double pdf_area = 1.0 / light_source->get_surface_area();
-						const double pdf_select = get_light_select_pdf(); // the probability of selecting the light uniformly
+							// solid-angle PDF
+							const double light_pdf = pdf_select * pdf_area * dist_squared / light_cosine;
 
-						// solid-angle PDF
-						const double light_pdf = pdf_select * pdf_area * dist_squared / light_cosine;
+							// BSDF PDF for the same direction
+							const double bsdf_pdf = diffuse_weight * surface_cosine / utility::PI;
 
-						// BSDF PDF for the same direction
-						const double bsdf_pdf = diffuse_weight * surface_cosine / utility::PI;
-
-						const double weight_light = utility::power_heuristic(light_pdf, bsdf_pdf);
-						
-						// and finally, voila:
-						direct = Le * fr * surface_cosine * weight_light / light_pdf;
+							const double weight_light = utility::power_heuristic(light_pdf, bsdf_pdf);
+							
+							// and finally, voila:
+							direct = Le * fr * surface_cosine * weight_light / light_pdf;
+						}
 					}
 				}
 			}
@@ -244,7 +253,7 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	auto end = std::chrono::high_resolution_clock::now();
 	time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	//std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
+	std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
 	return &framebuffer;
 }
 
