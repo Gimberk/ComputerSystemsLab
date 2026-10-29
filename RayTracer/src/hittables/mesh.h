@@ -11,11 +11,21 @@
 
 class mesh : public primitive {
 public:
+	mesh(const mesh&) = delete;
+	mesh& operator=(const mesh&) = delete;
+
 	mesh(const std::vector<std::shared_ptr<triangle>>& tris, std::unique_ptr<material> mat) : primitive(primitive_type::mesh, 
 		std::move(mat)), tris(tris), acceleration(tris), bounding_box(compute_bounds()) {
 		std::cout << "Created mesh with " << tris.size() << " triangles!" << '\n';
 
-		for (const auto& tri : tris) total_area += tri->get_surface_area();
+		const material* raw_mat = this->get_material();
+
+		for (const auto& tri : tris) {
+			total_area += tri->get_surface_area();
+
+			// jsut kind of hijack this for loop and assign this mesh's material to each of its triangles:
+			tri->set_mesh_material(raw_mat);
+		}
 
 		std::cout << "Total surface area: " << total_area << '\n';
 

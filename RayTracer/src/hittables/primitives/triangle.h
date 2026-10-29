@@ -34,11 +34,17 @@ public:
 
 	const vec3 get_normal(const point3& hit_point) const override { return normal; }
 
+	const material* get_material() const override { return mesh_material == nullptr ? primitive::get_material() : mesh_material; }
+
 	const aabb get_bounds() const;
 
 	const point3 get_centroid() const;
 
+	void set_mesh_material(const material* mesh) { mesh_material = mesh; }
+
 private:
+	const material* mesh_material = nullptr;
+
 	double surface_area;
 	vec3 edge1, edge2;
 

@@ -12,10 +12,9 @@ enum class primitive_type {
 class primitive {
 public:
 	primitive_type type;
-	std::unique_ptr<material> mat;
 
-	primitive(primitive&&) noexcept = default;
-	primitive& operator=(primitive&&) noexcept = default;
+	primitive(const primitive&) = delete;
+	primitive& operator=(const primitive&) = delete;
 
 	//primitive(primitive_type type) : type(type){}
 
@@ -32,7 +31,10 @@ public:
 	
 	const virtual point3 sample_random_point() const = 0;
 
-	void set_material(std::unique_ptr<material> mat) { this->mat = std::move(mat); }
-
 	const bool has_material() const { return bool(mat); }
+
+	virtual const material* get_material() const { return mat.get(); }
+
+private:
+	std::unique_ptr<material> mat;
 };

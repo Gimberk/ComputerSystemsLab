@@ -71,6 +71,10 @@ int main()
 		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 2);
 	#endif
 
+	cam.center = vec3(0.90369, 0.402226, 0.0240995);
+	cam.pitch = -11.5;
+	cam.yaw = -111.6;
+
 	world scene(&cam, &sky);
 
 	scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
@@ -144,6 +148,8 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) directional -= cam.forward_vector();
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) directional -= cam.right_vector();
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) directional += cam.right_vector();
+
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) std::cout << cam.center << ' ' << cam.pitch << ' ' << cam.yaw << '\n';
 
 		if (!directional.near_zero()) cam.center += unit_vector(directional) * cam.speed;
 

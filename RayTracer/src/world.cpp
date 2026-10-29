@@ -28,14 +28,14 @@ void world::create_object(const std::shared_ptr<primitive>& obj) {
 		return;
 	}
 
-	if (obj->mat->emission_intensity > epsilon) emissive_objects.emplace_back(obj);
+	if (obj->get_material()->emission_intensity > epsilon) emissive_objects.emplace_back(obj);
 }
 
 const bool world::find_any_hit(const ray & r, double max_t) const {
 	for (const auto& obj : objects) {
 		//if (obj.get() == ignore) continue;
 
-		if (!obj->mat->emission_color.near_zero()) continue;
+		if (!obj->get_material()->emission_color.near_zero()) continue;
 
 		const hit_record hit = obj->intersect(r);
 		if (hit.valid && hit.t > epsilon && hit.t < max_t) return true;
@@ -80,9 +80,12 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 		return world::BLACK;
 
 	const primitive* obj = record.object;
-	const material* mat = obj->mat.get();
+	const material* mat = obj->get_material();
 
 	// this is the NEE / MIS implementation
+
+	const double metallica = std::clamp(mat->metallic, 0.0, 1.0);
+	const double diffuse_weight = 1.0 - metallica;
 
 	const color emission = mat->emission_color * mat->emission_intensity;
 	if (!emission.near_zero()) {
@@ -99,10 +102,7 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 
 	const point3 hit_point = r.point(record.t);
 	const vec3 normal = obj->get_normal(record, hit_point);
-	const color albedo = obj->mat->albedo;
-
-	const double metallica = std::clamp(mat->metallic, 0.0, 1.0);
-	const double diffuse_weight = 1.0 - metallica;
+	const color albedo = obj->get_material()->albedo;
 
 	color direct = world::BLACK;
 
@@ -132,7 +132,7 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 
 					if (!blocked) {
 						// perform the rest of NEE now that there is a direct path
-						const color Le = light_source->mat->emission_color * light_source->mat->emission_intensity;
+						const color Le = light_source->get_material()->emission_color * light_source->get_material()->emission_intensity;
 
 						const color fr = diffuse_weight * albedo / utility::PI;
 
@@ -176,7 +176,7 @@ color world::ray_color(const ray& r, const int depth, const double previous_bsdf
 	const double pdf_bsdf = std::max(0.0, diffuse_weight * dot(normal, wi) / utility::PI);
 
 	const ray scattered(hit_point + normal * epsilon, wi);
-	const color indirect = albedo * ray_color(scattered, depth + 1, pdf_bsdf, hit_point, true);
+	const color indirect = albedo * ray_color(scattered, depth + 1, pdf_bsdf, hit_point, true, false);
 
 	return direct + indirect;
 }
@@ -244,7 +244,7 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	auto end = std::chrono::high_resolution_clock::now();
 	time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
+	//std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
 	return &framebuffer;
 }
 
