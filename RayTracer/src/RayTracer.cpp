@@ -1,5 +1,6 @@
 #include <memory>
 #include <filesystem>
+#include <format>
 
 #ifdef _MSC_VER
 #include <glad/glad.h>
@@ -22,6 +23,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "ext/stb_image_write.h"
 #include "ext/stb_image.h"
+
+#include "ext/imgui/imgui.h"
+#include "ext/imgui/imgui_impl_glfw.h"
+#include "ext/imgui/imgui_impl_opengl3.h"
 
 bool first_mouse = true;
 float last_x, last_y;
@@ -110,6 +115,16 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+
 	// init GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD\n";
@@ -139,6 +154,8 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 
 	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+
 		// inputs - to be moved later
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 
@@ -157,8 +174,10 @@ int main()
 
 		// upload the ray tracer data to the texture
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cam.image_width, cam.image_height, 
-						GL_RGB, GL_UNSIGNED_BYTE, scene.generate_image(&pool)->data());
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cam.image_width, cam.image_height,
+			GL_RGB, GL_UNSIGNED_BYTE, scene.generate_image(&pool)->data());
+
+		const double frame_time = scene.get_time_for_last_frame();
 
 		// configure blit buffers
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
@@ -168,15 +187,44 @@ int main()
 
 		// blit the pixels to the screen
 		glBlitFramebuffer(0, 0, cam.image_width, cam.image_height, 0, cam.image_height, cam.image_width, 0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+
+		ImGui::NewFrame();
+
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiCond_Always);
+
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar			| 
+								 ImGuiWindowFlags_NoResize				| 
+								 ImGuiWindowFlags_NoMove				| 
+								 ImGuiWindowFlags_NoScrollbar			| 
+								 ImGuiWindowFlags_NoSavedSettings		| 
+								 ImGuiWindowFlags_NoInputs				|
+								 ImGuiWindowFlags_NoBackground;
+
+		const std::string fps = std::format("{:.1f} fps", 1.0 / frame_time);
+
+		if (ImGui::Begin("Overlay", nullptr, flags)) ImGui::Text(fps.c_str());
+		ImGui::End();
+		
+		ImGui::PopStyleColor(2);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
 
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &texture);
 	glfwTerminate();
 	#else
+
 	const int accumulation_count = 1000;
 	
 	double total_time_taken = 0;

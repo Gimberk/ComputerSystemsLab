@@ -153,6 +153,12 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ext\imgui\imgui.cpp" />
+    <ClCompile Include="src\ext\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\ext\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\ext\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\ext\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\ext\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\utility\bvh.cpp" />
     <ClCompile Include="src\hittables\aabb.cpp" />
     <ClCompile Include="src\hittables\mesh.cpp" />
@@ -169,6 +175,15 @@
     <ClCompile Include="src\hittables\primitives\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ext\imgui\imconfig.h" />
+    <ClInclude Include="src\ext\imgui\imgui.h" />
+    <ClInclude Include="src\ext\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\ext\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\ext\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\ext\imgui\imgui_internal.h" />
+    <ClInclude Include="src\ext\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\ext\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\ext\imgui\imstb_truetype.h" />
     <ClInclude Include="src\utility\bvh.h" />
     <ClInclude Include="src\hittables\aabb.h" />
     <ClInclude Include="libs\GLFW\include\GLFW\glfw3.h" />
