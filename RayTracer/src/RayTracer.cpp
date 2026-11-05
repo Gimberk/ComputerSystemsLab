@@ -15,6 +15,7 @@
 #include "utility/thread_pool.h"
 
 #include "hittables/primitives/sphere.h"
+#include "hittables/primitives/plane.h"
 #include "hittables/mesh.h"
 
 #include "utility/model_loader.h"
@@ -76,23 +77,57 @@ int main()
 		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 2);
 	#endif
 
-	cam.center = vec3(0.90369, 0.402226, 0.0240995);
-	cam.pitch = -11.5;
-	cam.yaw = -111.6;
+	cam.center = vec3(0.046011131, -0.122869844, -0.55681343);
+	cam.pitch = -4.099999793;
+	cam.yaw = -179.300001448;
 
 	world scene(&cam, &sky);
 
-	//scene.create_object(std::make_shared<sphere>(point3(0, 0.5, 0), 0.3, 
-	//	std::make_unique<material>(color(0.67, 0.5, 1.5), color(1,1,1), 2)));
+	// Floor
+	scene.create_object(std::make_shared<plane>(
+		point3(0, -1, -2), vec3(0, 1, 0), 2, 2,
+		std::make_unique<material>(color(0.73, 0.73, 0.73))
+	));
 
-	//scene.create_object(std::make_shared<sphere>(point3(1.25, 0, -1), 0.5,
-	//	std::make_unique<material>(color(1, 0.5, 0.67), 1, 0)));
+	// Ceiling
+	scene.create_object(std::make_shared<plane>(
+		point3(0, 1, -2), vec3(0, -1, 0), 2, 2,
+		std::make_unique<material>(color(0.73, 0.73, 0.73))
+	));
 
-	scene.create_object(std::make_shared<sphere>(point3(0, -100.5, -1), 100,
-		std::make_unique<material>(color(0.78, 0.34, 1))));
+	// Back wall
+	scene.create_object(std::make_shared<plane>(
+		point3(0, 0, -3), vec3(0, 0, 1), 2, 2,
+		std::make_unique<material>(color(0.73, 0.73, 0.73))
+	));
 
-	scene.create_object(std::make_shared<mesh>(model_loader::load_model(model_loader::get_model_path() + "/pawn.obj", 
-		vec3(0,-0.5,-1.0), 0.25), std::make_unique<material>(color(1,1,1), 0.5, 0.0)));
+	// Left wall (red)
+	scene.create_object(std::make_shared<plane>(
+		point3(-1, 0, -2), vec3(1, 0, 0), 2, 2,
+		std::make_unique<material>(color(0.65, 0.05, 0.05))
+	));
+
+	// Right wall (green)
+	scene.create_object(std::make_shared<plane>(
+		point3(1, 0, -2), vec3(-1, 0, 0), 2, 2,
+		std::make_unique<material>(color(0.12, 0.45, 0.15))
+	));
+
+	// Center sphere
+	scene.create_object(std::make_shared<sphere>(
+		point3(0, -0.5, -2), 0.5,
+		std::make_unique<material>(color(0.73, 0.73, 0.73))
+	));
+
+	// Emissive sphere
+	scene.create_object(std::make_shared<sphere>(
+		point3(0, 0.8, -2), 0.15,
+		std::make_unique<material>(
+			color(1, 1, 1),
+			color(12, 12, 12),
+			1
+		)
+	));
 
 	// create the window; only run when compiled on home device
 	#ifdef _MSC_VER

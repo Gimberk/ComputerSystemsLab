@@ -23,8 +23,8 @@ const hit_record plane::intersect(const ray& r) {
 }
 
 const point3 plane::sample_random_point() const {
-	const double sx = utility::random_double64() * 2 + 1;
-	const double sy = utility::random_double64() * 2 + 1;
+	const double sx = utility::random_double64() * 2 - 1;
+	const double sy = utility::random_double64() * 2 - 1;
 
 	return vertex + (sx * u) + (sy * v);
 }

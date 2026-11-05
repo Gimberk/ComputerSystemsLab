@@ -215,6 +215,7 @@
     <None Include="assets\sky_box.hdr" />
     <None Include="assets\sunny.hdr" />
     <None Include="assets\water.hdr" />
+    <None Include="imgui.ini" />
     <None Include="libs\GLFW\lib\glfw3.dll" />
     <None Include="Profiler\Report20260820-2151.diagsession" />
   </ItemGroup>
