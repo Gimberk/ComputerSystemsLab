@@ -5,6 +5,10 @@
 #ifdef _MSC_VER
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "ext/other/imgui/imgui.h"
+#include "ext/other/imgui/imgui_impl_glfw.h"
+#include "ext/other/imgui/imgui_impl_opengl3.h"
 #endif
 
 #include "world.h"
@@ -24,10 +28,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "ext/stb_image_write.h"
 #include "ext/stb_image.h"
-
-#include "ext/imgui/imgui.h"
-#include "ext/imgui/imgui_impl_glfw.h"
-#include "ext/imgui/imgui_impl_opengl3.h"
 
 bool first_mouse = true;
 float last_x, last_y;
@@ -69,7 +69,7 @@ static void mouse_callback(GLFWwindow* window, double x_in, double y_in) {
 
 int main()
 {
-	thread_pool pool(1);
+	thread_pool pool(cam.max_threads);
 
 	#ifndef _MSC_VER
 		skybox sky("/csl/users/2027jfleming/Desktop/ComputerSystemsLab/RayTracer/assets/skybox.hdr", 3);
@@ -77,9 +77,9 @@ int main()
 		skybox sky("C:\\Users\\james\\source\\repos\\RayTracer\\RayTracer\\assets\\sky_box.hdr", 2);
 	#endif
 
-	cam.center = vec3(0.046011131, -0.122869844, -0.55681343);
-	cam.pitch = -4.099999793;
-	cam.yaw = -179.300001448;
+	//cam.center = vec3(0.046011131, -0.122869844, -0.55681343);
+	//cam.pitch = -4.099999793;
+	//cam.yaw = -179.300001448;
 
 	world scene(&cam, &sky);
 
@@ -113,10 +113,18 @@ int main()
 		std::make_unique<material>(color(0.12, 0.45, 0.15))
 	));
 
+	/*
 	// Center sphere
 	scene.create_object(std::make_shared<sphere>(
 		point3(0, -0.5, -2), 0.5,
 		std::make_unique<material>(color(0.73, 0.73, 0.73))
+	));
+	*/
+
+	// center pawn
+	scene.create_object(std::make_shared<mesh>(
+		model_loader::load_model(model_loader::get_model_path() + "pawn.obj", vec3(0, -1, -2), 0.2),
+		std::make_unique<material>(color(0.83, 0.0, 0.83))
 	));
 
 	// Emissive sphere
