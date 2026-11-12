@@ -52,7 +52,7 @@ public:
 	const double get_time_for_last_frame() const { return time_for_last_frame; }
 
 private:
-	void process_pixel_subsection(int startY, int endY);
+	void process_pixel_subsection(int start_x, int end_x, int start_y, int end_y);
 
 	double time_for_last_frame = 0;	
 

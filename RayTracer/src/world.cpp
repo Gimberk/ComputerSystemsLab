@@ -200,17 +200,21 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	}
 
 	// for multithreading
+	const int tile_size = 32;
+	const int tiles_x = (cam->image_width + tile_size - 1) / tile_size;
+	const int tiles_y = (cam->image_height + tile_size - 1) / tile_size;
+
 	std::vector<std::future<void>> frame_futures;
-	frame_futures.reserve(cam->max_threads);
-
-	int rows_per_thread = cam->image_height  / cam->max_threads;
+	frame_futures.reserve(tiles_x * tiles_y);
 	
-	// assign a number of rows to each available thread
-	for (unsigned int i = 0; i < cam->max_threads; i++) {
-		int start_y = i * rows_per_thread;
-		int end_y = (i == cam->max_threads - 1) ? cam->image_height : start_y + rows_per_thread;
+	// create a pool of tiles to be rendered
+	for (int y = 0; y < cam->image_height; y += tile_size){
+		for (int x = 0; x < cam->image_width; x += tile_size){
+			int end_x = std::min(x + tile_size, cam->image_width);
+			int end_y = std::min(y + tile_size, cam->image_height);
 
-		frame_futures.emplace_back(pool->enqueue(&world::process_pixel_subsection, this, start_y, end_y));
+			frame_futures.emplace_back(pool->enqueue(&world::process_pixel_subsection, this, x, end_x, y, end_y));
+		}
 	}
 
 	// make sure each thread completes their rows before continuing.
@@ -253,14 +257,13 @@ const std::vector<unsigned char>* world::generate_image(thread_pool* pool, bool 
 	auto end = std::chrono::high_resolution_clock::now();
 	time_for_last_frame = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-9;
 
-	std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
+	//std::cout << "Generated framebuffer in " << std::fixed << get_time_for_last_frame() << std::setprecision(9) << '\n';
 	return &framebuffer;
 }
 
-void world::process_pixel_subsection(int startY, int endY) {
-	for (int row = startY; row < endY; row++){
-		for (int c = 0; c < cam->image_width; c++){
-			// broken code that is causing segfaults:
+void world::process_pixel_subsection(int start_x, int end_x, int start_y, int end_y) {
+	for (int row = start_y; row < end_y; row++){
+		for (int c = start_x; c < end_x; c++){
 			auto pixel_center = cam->pixel00_location + cam->pixel_delta_u * c + cam->pixel_delta_v * row;
 			color average_color(0, 0, 0); // averaging the randomness of ray reflections fixes the jagged edges
 

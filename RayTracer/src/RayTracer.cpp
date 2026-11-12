@@ -268,7 +268,7 @@ int main()
 	glfwTerminate();
 	#else
 
-	const int accumulation_count = 1000;
+	const int accumulation_count = 50;
 	
 	double total_time_taken = 0;
 	for (int frame_ct = 0; frame_ct < accumulation_count - 1; frame_ct++){
